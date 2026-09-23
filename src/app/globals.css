@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 30, 41, 59;
+  --background-start-rgb: 248, 250, 252;
+  --background-end-rgb: 241, 245, 249;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      rgb(var(--background-start-rgb)),
+      rgb(var(--background-end-rgb))
+    )
+    fixed;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 초등 4~6학년 맞춤형 큼직한 터치 타깃 & 폰트 유틸리티 */
+@layer components {
+  .btn-touch {
+    @apply min-h-[52px] min-w-[52px] px-6 py-3 rounded-2xl font-bold text-lg transition-all active:scale-95 flex items-center justify-center gap-2 select-none;
+  }
+  
+  .card-chunky {
+    @apply bg-white rounded-3xl p-6 border-2 border-slate-100 shadow-sm transition-all;
+  }
+}
+
+/* 부드러운 오답 흔들림 애니메이션 */
+@keyframes soft-shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.animate-shake {
+  animation: soft-shake 0.4s ease-in-out;
+}
+
+/* 초록색 성공 펄스 */
+@keyframes success-pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+  50% { transform: scale(1.02); box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+.animate-success {
+  animation: success-pulse 0.5s ease-out;
+}
