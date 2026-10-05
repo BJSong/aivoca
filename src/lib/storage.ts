@@ -141,6 +141,459 @@ export const SAMPLE_TED_DECK: DeckWithItems = {
   ],
 };
 
+// 8주차 교재 단어장: TEDTALKS (pp. 64-65) & NOVEL (pp. 66-67) & SPEECH (p. 68) 통합 (총 20단어)
+export const WEEK8_TEXTBOOK_DECK: DeckWithItems = {
+  id: "deck-week8",
+  title: "8주차 단어장",
+  publisher: "8주차",
+  book_name: "TEDTALKS, NOVEL & SPEECH (pp.64-68)",
+  target_grade: "초등 5~6학년",
+  created_at: new Date().toISOString(),
+  items_count: 20,
+  mastered_count: 0,
+  extra_metadata: {
+    week: "8주차",
+    theme: "Vision & Adventure & Inspiration",
+    pages: "64-68",
+    ted_pages: "64-65",
+    novel_pages: "66-67",
+    speech_pages: "68",
+  },
+  items: [
+    {
+      id: "word-w8-01-vision",
+      deck_id: "deck-week8",
+      word: "vision",
+      part_of_speech: "noun",
+      phonetic_symbol: "/ˈvɪʒ.ən/",
+      english_definition: "a mental image of something",
+      korean_definition: "비전, 미래상, 마음속에 그리는 모습",
+      synonyms: ["idea"],
+      antonyms: [],
+      collocations: ["clear vision", "future vision", "trust one's vision"],
+      example_sentence:
+        "The architect had a clear vision of what the building should look like.",
+      ted_context:
+        "I wish that I had trusted my own vision and my own sensibility more.",
+      order_index: 0,
+      extra_metadata: { textbook_page: 64, category: "TEDTALKS" },
+    },
+    {
+      id: "word-w8-02-sensibility",
+      deck_id: "deck-week8",
+      word: "sensibility",
+      part_of_speech: "noun",
+      phonetic_symbol: "/ˌsen.səˈbɪl.ə.t̬i/",
+      english_definition:
+        "an understanding of, or ability to judge, what is good or valuable",
+      korean_definition: "감성, 감수성, 분별력",
+      synonyms: ["taste"],
+      antonyms: [],
+      collocations: [
+        "artistic sensibility",
+        "moral sensibility",
+        "own sensibility",
+      ],
+      example_sentence:
+        "The designer's artistic sensibility was evident in every dress she made.",
+      ted_context:
+        "I wish that I had trusted my own vision and my own sensibility more.",
+      order_index: 1,
+      extra_metadata: { textbook_page: 64, category: "TEDTALKS" },
+    },
+    {
+      id: "word-w8-03-honor",
+      deck_id: "deck-week8",
+      word: "honor",
+      part_of_speech: "verb",
+      phonetic_symbol: "/ˈɑː.nɚ/",
+      english_definition: "to show great respect for someone or something",
+      korean_definition: "존중하다, 경의를 표하다",
+      synonyms: ["praise"],
+      antonyms: ["disrespect"],
+      collocations: ["honor a promise", "honor traditions", "great honor"],
+      example_sentence:
+        "It is important to honor your promises to your friends.",
+      ted_context:
+        "... I think that it just took me a while to understand that my perspective was important enough. I wish I had honored that perspective.",
+      order_index: 2,
+      extra_metadata: { textbook_page: 64, category: "TEDTALKS" },
+    },
+    {
+      id: "word-w8-04-perspective",
+      deck_id: "deck-week8",
+      word: "perspective",
+      part_of_speech: "noun",
+      phonetic_symbol: "/pɚˈspek.tɪv/",
+      english_definition: "a particular way of considering something",
+      korean_definition: "관점, 시각",
+      synonyms: ["viewpoint"],
+      antonyms: [],
+      collocations: [
+        "broader perspective",
+        "different perspective",
+        "from my perspective",
+      ],
+      example_sentence:
+        "Traveling gives you a broader perspective on the world and others around you.",
+      ted_context:
+        "I wish I had honored the perspectives of people who look like me, of other women, of other women of color who are trying to do this work...",
+      order_index: 3,
+      extra_metadata: { textbook_page: 64, category: "TEDTALKS" },
+    },
+    {
+      id: "word-w8-05-entrust",
+      deck_id: "deck-week8",
+      word: "entrust",
+      part_of_speech: "verb",
+      phonetic_symbol: "/ɪnˈtrʌst/",
+      english_definition:
+        "to give someone responsibility for something or someone",
+      korean_definition: "(책임·일을) 맡기다, 위탁하다",
+      synonyms: ["assign"],
+      antonyms: ["withhold"],
+      collocations: [
+        "entrust to someone",
+        "entrust with responsibility",
+      ],
+      example_sentence:
+        "I entrust my dog to my neighbor whenever I go on vacation.",
+      ted_context:
+        "... but I think that being welcomed into those spaces and being entrusted with other people's stories is the greatest privilege.",
+      order_index: 4,
+      extra_metadata: { textbook_page: 65, category: "TEDTALKS" },
+    },
+    {
+      id: "word-w8-06-privilege",
+      deck_id: "deck-week8",
+      word: "privilege",
+      part_of_speech: "noun",
+      phonetic_symbol: "/ˈprɪv.əl.ɪdʒ/",
+      english_definition:
+        "an advantage that only one person or group of people has",
+      korean_definition: "특권, 특별한 기회",
+      synonyms: ["benefit"],
+      antonyms: ["disadvantage"],
+      collocations: [
+        "greatest privilege",
+        "special privilege",
+        "have the privilege",
+      ],
+      example_sentence:
+        "Melissa had the privilege of studying abroad for a year.",
+      ted_context:
+        "... but I think that being welcomed into those spaces and being entrusted with other people's stories is the greatest privilege.",
+      order_index: 5,
+      extra_metadata: { textbook_page: 65, category: "TEDTALKS" },
+    },
+    {
+      id: "word-w8-07-deviate-from",
+      deck_id: "deck-week8",
+      word: "deviate from",
+      part_of_speech: "verb",
+      phonetic_symbol: "/ˈdiː.vi.eɪt frəm/",
+      english_definition:
+        "to do something that is different from the usual or common way of behaving",
+      korean_definition: "~에서 벗어나다, 이탈하다",
+      synonyms: ["stray from"],
+      antonyms: ["follow"],
+      collocations: [
+        "deviate from the path",
+        "deviate from the norm",
+        "deviate from the plan",
+      ],
+      example_sentence:
+        "The pilot had to deviate from the flight path to avoid the storm.",
+      ted_context:
+        "... trying to honor that with a truthful image, a truthful story, and making sure that I don't deviate from knowing that.",
+      order_index: 6,
+      extra_metadata: { textbook_page: 65, category: "TEDTALKS" },
+    },
+    {
+      id: "word-w8-08-collaboration",
+      deck_id: "deck-week8",
+      word: "collaboration",
+      part_of_speech: "noun",
+      phonetic_symbol: "/kəˌlæb.əˈreɪ.ʃən/",
+      english_definition:
+        "working together with others to create or achieve something",
+      korean_definition: "협력, 공동 작업",
+      synonyms: ["partnership"],
+      antonyms: [],
+      collocations: [
+        "successful collaboration",
+        "close collaboration",
+        "in collaboration with",
+      ],
+      example_sentence:
+        "The project was a successful collaboration between the two universities.",
+      ted_context:
+        "Making sure that when I take pictures now, I make sure it's a collaboration between myself and the person in front of me.",
+      order_index: 7,
+      extra_metadata: { textbook_page: 65, category: "TEDTALKS" },
+    },
+    {
+      id: "word-w8-09-primly",
+      deck_id: "deck-week8",
+      word: "primly",
+      part_of_speech: "adverb",
+      phonetic_symbol: "/ˈprɪm.li/",
+      english_definition: "in a proper, neat, or formal way",
+      korean_definition: "새침하게, 얌전빼며, 단정하게",
+      synonyms: ["correctly"],
+      antonyms: ["casually"],
+      collocations: ["sit primly", "say primly", "smile primly"],
+      example_sentence:
+        "Joanna sat primly in her chair, following her lessons on table manners.",
+      ted_context:
+        `"You're a slitherer, that's all you are! You just slither along!" "I glide," said the Earthworm primly.`,
+      order_index: 8,
+      extra_metadata: { textbook_page: 66, category: "NOVEL" },
+    },
+    {
+      id: "word-w8-10-hysterics",
+      deck_id: "deck-week8",
+      word: "hysterics",
+      part_of_speech: "noun",
+      phonetic_symbol: "/hɪˈster.ɪks/",
+      english_definition:
+        "a state of uncontrolled laughter, cry, or other extreme emotion",
+      korean_definition: "발작적 웃음[울음], 히스테리",
+      synonyms: ["frenzy"],
+      antonyms: ["collectedness"],
+      collocations: [
+        "go into hysterics",
+        "dissolve into hysterics",
+        "in hysterics",
+      ],
+      example_sentence:
+        "The whole classroom dissolved into hysterics when the teacher burped.",
+      ted_context:
+        `This sent the Centipede into hysterics. "Pulling his leg!" he cried, wriggling with glee and pointing at the Earthworm.`,
+      order_index: 9,
+      extra_metadata: { textbook_page: 66, category: "NOVEL" },
+    },
+    {
+      id: "word-w8-11-desolate",
+      deck_id: "deck-week8",
+      word: "desolate",
+      part_of_speech: "adjective",
+      phonetic_symbol: "/ˈdes.ə.lət/",
+      english_definition:
+        "empty and without people or anything pleasant",
+      korean_definition: "황량한, 적막한",
+      synonyms: ["deserted"],
+      antonyms: ["lively"],
+      collocations: [
+        "desolate landscape",
+        "desolate place",
+        "desolate wasteland",
+      ],
+      example_sentence:
+        "This used to be a lively town, but it is a desolate wasteland now.",
+      ted_context:
+        `"Who lives in the desolate snow / And whenever he catches a cold (which he dreads)..."`,
+      order_index: 10,
+      extra_metadata: { textbook_page: 66, category: "NOVEL" },
+    },
+    {
+      id: "word-w8-12-insidiously",
+      deck_id: "deck-week8",
+      word: "insidiously",
+      part_of_speech: "adverb",
+      phonetic_symbol: "/ɪnˈsɪd.i.əs.li/",
+      english_definition:
+        "in a way that gradually and secretly causes harm",
+      korean_definition: "은밀하게, 서서히 퍼져 해를 끼치며",
+      synonyms: ["slyly"],
+      antonyms: ["honestly"],
+      collocations: [
+        "spread insidiously",
+        "creep insidiously",
+        "insidiously harmful",
+      ],
+      example_sentence:
+        "COVID-19 spread insidiously through the community and infected everyone.",
+      ted_context:
+        "One second later... slowly, insidiously, oh most gently, the great peach started to lean forward and steal into motion.",
+      order_index: 11,
+      extra_metadata: { textbook_page: 66, category: "NOVEL" },
+    },
+    {
+      id: "word-w8-13-bungalow",
+      deck_id: "deck-week8",
+      word: "bungalow",
+      part_of_speech: "noun",
+      phonetic_symbol: "/ˈbʌŋ.ɡə.loʊ/",
+      english_definition: "a small house, usually with one level",
+      korean_definition: "방갈로 (단층 주택)",
+      synonyms: ["cottage"],
+      antonyms: [],
+      collocations: [
+        "cozy bungalow",
+        "beach bungalow",
+        "single-story bungalow",
+      ],
+      example_sentence:
+        "The couple's cozy bungalow by the beach was the perfect vacation spot.",
+      ted_context:
+        "Cowsheds, stables, pigsties, barns, bungalows, hayricks, anything that got in its way went toppling over...",
+      order_index: 12,
+      extra_metadata: { textbook_page: 67, category: "NOVEL" },
+    },
+    {
+      id: "word-w8-14-serenely",
+      deck_id: "deck-week8",
+      word: "serenely",
+      part_of_speech: "adverb",
+      phonetic_symbol: "/səˈriːn.li/",
+      english_definition: "in a calm and untroubled manner",
+      korean_definition: "평온하게, 차분하게",
+      synonyms: ["peacefully"],
+      antonyms: ["chaotically"],
+      collocations: ["float serenely", "smile serenely", "sit serenely"],
+      example_sentence:
+        "I sat serenely by the warm fireplace, reading my favorite book.",
+      ted_context:
+        "But a few seconds later, up it came again, and this time, up it stayed, floating serenely upon the surface of the water.",
+      order_index: 13,
+      extra_metadata: { textbook_page: 67, category: "NOVEL" },
+    },
+    {
+      id: "word-w8-15-coil",
+      deck_id: "deck-week8",
+      word: "coil",
+      part_of_speech: "verb",
+      phonetic_symbol: "/kɔɪl/",
+      english_definition:
+        "to wind into loops around someone or something",
+      korean_definition: "돌돌 말다, 휘감다",
+      synonyms: ["twist"],
+      antonyms: ["untwist"],
+      collocations: ["coil around", "coil itself", "tightly coiled"],
+      example_sentence:
+        "The snake coiled itself around the tree branch, waiting for prey.",
+      ted_context:
+        "... coiled himself around James's body in a panic and refused to unwind.",
+      order_index: 14,
+      extra_metadata: { textbook_page: 67, category: "NOVEL" },
+    },
+    {
+      id: "word-w8-16-amidst",
+      deck_id: "deck-week8",
+      word: "amidst",
+      part_of_speech: "preposition",
+      phonetic_symbol: "/əˈmɪdst/",
+      english_definition: "in the middle of",
+      korean_definition: "~의 한가운데에, ~속에",
+      synonyms: ["among"],
+      antonyms: [],
+      collocations: [
+        "amidst the chaos",
+        "amidst excitement",
+        "amidst difficulties",
+      ],
+      example_sentence:
+        "Amidst the chaos of the city, we found a quiet park to relax in.",
+      ted_context:
+        "Amidst mounting excitement and shouts... the whole company climbed up the ladder one by one...",
+      order_index: 15,
+      extra_metadata: { textbook_page: 67, category: "NOVEL" },
+    },
+    {
+      id: "word-w8-17-improve",
+      deck_id: "deck-week8",
+      word: "improve",
+      part_of_speech: "verb",
+      phonetic_symbol: "/ɪmˈpruːv/",
+      english_definition: "to get better",
+      korean_definition: "향상시키다, 개선되다",
+      synonyms: ["develop"],
+      antonyms: ["worsen"],
+      collocations: [
+        "improve skills",
+        "improve performance",
+        "dramatically improve",
+      ],
+      example_sentence:
+        "Practicing every day will help you improve your guitar skills.",
+      ted_context:
+        "Instead of using their knowledge for themselves, they are helping someone else improve.",
+      order_index: 16,
+      extra_metadata: { textbook_page: 68, category: "SPEECH" },
+    },
+    {
+      id: "word-w8-18-legacy",
+      deck_id: "deck-week8",
+      word: "legacy",
+      part_of_speech: "noun",
+      phonetic_symbol: "/ˈleɡ.ə.si/",
+      english_definition:
+        "something left behind from the past or from someone's life or actions",
+      korean_definition: "유산, 남겨진 것",
+      synonyms: ["memory"],
+      antonyms: [],
+      collocations: [
+        "leave a legacy",
+        "lasting legacy",
+        "legacy of kindness",
+      ],
+      example_sentence:
+        "The famous teacher left a legacy of kindness at the school.",
+      ted_context:
+        "The best kind of success leaves a legacy, not just a trophy.",
+      order_index: 17,
+      extra_metadata: { textbook_page: 68, category: "SPEECH" },
+    },
+    {
+      id: "word-w8-19-supportive",
+      deck_id: "deck-week8",
+      word: "supportive",
+      part_of_speech: "adjective",
+      phonetic_symbol: "/səˈpɔːr.t̬ɪv/",
+      english_definition:
+        "showing agreement and giving encouragement",
+      korean_definition: "지지하는, 응원하는, 힘을 주는",
+      synonyms: ["helpful"],
+      antonyms: ["unsupportive"],
+      collocations: [
+        "supportive of",
+        "supportive family",
+        "mutually supportive",
+      ],
+      example_sentence:
+        "My parents are very supportive of my dream to become a dancer.",
+      ted_context:
+        "In conclusion, the true measure of success is about doing our best, growing through challenges, and being supportive of others.",
+      order_index: 18,
+      extra_metadata: { textbook_page: 68, category: "SPEECH" },
+    },
+    {
+      id: "word-w8-20-challenge",
+      deck_id: "deck-week8",
+      word: "challenge",
+      part_of_speech: "verb",
+      phonetic_symbol: "/ˈtʃæl.ɪndʒ/",
+      english_definition:
+        "to urge someone to do something difficult",
+      korean_definition: "도전하게 하다, 이의를 제기하다",
+      synonyms: ["encourage"],
+      antonyms: ["discourage"],
+      collocations: [
+        "challenge someone to",
+        "face a challenge",
+        "challenge yourself",
+      ],
+      example_sentence:
+        "I challenged my friend to race me to the end of the street on our bikes.",
+      ted_context:
+        `Next time, I challenge you to ask yourself, "Did I try my best? Did I grow? Did I help someone?"`,
+      order_index: 19,
+      extra_metadata: { textbook_page: 68, category: "SPEECH" },
+    },
+  ],
+};
+
 // 9주차 교재 단어장: TEDTALKS (pp. 74-75) & NOVEL (pp. 76-77) 통합 (총 16단어)
 export const WEEK9_TEXTBOOK_DECK: DeckWithItems = {
   id: "deck-week9",
@@ -497,6 +950,7 @@ export const TEXTBOOK_NOVEL_DECK: DeckWithItems = {
 };
 
 export const INITIAL_DEFAULT_DECKS: DeckWithItems[] = [
+  WEEK8_TEXTBOOK_DECK,
   WEEK9_TEXTBOOK_DECK,
   SAMPLE_TED_DECK,
 ];
