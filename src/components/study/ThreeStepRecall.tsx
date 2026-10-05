@@ -310,7 +310,7 @@ export default function ThreeStepRecall({
 
             {/* 영문 품사 태그 */}
             <span
-              className={`border text-xs sm:text-sm px-3 py-1 rounded-full font-black uppercase shadow-sm ${posInfo.badgeClass}`}
+              className={`border text-xs sm:text-sm px-3 py-1 rounded-full font-black shadow-sm ${posInfo.badgeClass}`}
               title={posInfo.hint}
             >
               {posInfo.fullText}

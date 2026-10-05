@@ -221,7 +221,7 @@ export default function DeckDetailPage() {
                       )}
                       {/* 영어 품사 뱃지 */}
                       <span
-                        className={`text-xs font-black px-2 py-0.5 rounded-md border uppercase ${posInfo.badgeClass}`}
+                        className={`text-xs font-black px-2 py-0.5 rounded-md border ${posInfo.badgeClass}`}
                         title={posInfo.hint}
                       >
                         {posInfo.fullText}

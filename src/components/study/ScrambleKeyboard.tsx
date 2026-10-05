@@ -23,19 +23,21 @@ export default function ScrambleKeyboard({
   onSubmit,
   disabled = false,
 }: ScrambleKeyboardProps) {
-  const cleanTarget = targetWord.toLowerCase().trim();
+  // 원래 단어 형태(소문자/원문 대소문자) 유지
+  const cleanTarget = targetWord.trim();
 
   // 2단계(힌트 페이딩): 앞뒤 글자만 기본 제공 ('m _ _ _ _ _ n t')
-  // 첫 글자, 마지막 글자 (또는 7글자 이상일 경우 중간 힌트)
   const initialFixedIndices = useMemo(() => {
     if (step !== 2) return new Set<number>();
     const set = new Set<number>();
-    if (cleanTarget.length > 0) set.add(0);
-    if (cleanTarget.length > 2) set.add(cleanTarget.length - 1);
+    if (cleanTarget.length > 0 && cleanTarget[0] !== " ") set.add(0);
+    if (cleanTarget.length > 2 && cleanTarget[cleanTarget.length - 1] !== " ") {
+      set.add(cleanTarget.length - 1);
+    }
     return set;
   }, [cleanTarget, step]);
 
-  // 스크램블 블록 구성: 채워야 할 문자들 + 약간의 알파벳 섞기
+  // 스크램블 블록 구성: 채워야 할 문자들
   const [blocks, setBlocks] = useState<LetterItem[]>([]);
   // 사용자가 입력한 문자 배열 (길이는 cleanTarget.length)
   const [userSlots, setUserSlots] = useState<(LetterItem | null)[]>([]);
@@ -46,6 +48,8 @@ export default function ScrambleKeyboard({
     const neededLetters: LetterItem[] = [];
 
     chars.forEach((char, idx) => {
+      // 공백은 블록으로 두지 않고 슬롯에 자동 채움
+      if (char === " ") return;
       // 2단계에서 고정 힌트인 글자는 블록 목록에서 제외
       if (step === 2 && initialFixedIndices.has(idx)) {
         return;
@@ -63,6 +67,13 @@ export default function ScrambleKeyboard({
 
     // 슬롯 초기화
     const slots = chars.map((char, idx) => {
+      if (char === " ") {
+        return {
+          id: `space-${idx}`,
+          char: " ",
+          used: true,
+        };
+      }
       if (step === 2 && initialFixedIndices.has(idx)) {
         return {
           id: `fixed-${idx}`,
@@ -93,7 +104,7 @@ export default function ScrambleKeyboard({
       prev.map((b) => (b.id === block.id ? { ...b, used: true } : b))
     );
 
-    // 모든 슬롯이 다 찼는지 확인 후 자동 또는 즉시 제출 가능
+    // 모든 슬롯이 다 찼는지 확인 후 자동 제출
     const allFilled = nextSlots.every((s) => s !== null);
     if (allFilled) {
       const answer = nextSlots.map((s) => s?.char || "").join("");
@@ -104,6 +115,7 @@ export default function ScrambleKeyboard({
   // 특정 슬롯 비우기
   const handleSlotClick = (index: number) => {
     if (disabled) return;
+    if (cleanTarget[index] === " ") return; // 공백은 취소 불가
     if (step === 2 && initialFixedIndices.has(index)) return; // 고정 힌트는 클릭 취소 불가
 
     const slotItem = userSlots[index];
@@ -126,7 +138,11 @@ export default function ScrambleKeyboard({
     if (disabled) return;
     // 뒤에서부터 비어있지 않고 고정되지 않은 슬롯 찾기
     for (let i = userSlots.length - 1; i >= 0; i--) {
-      if (userSlots[i] !== null && (!initialFixedIndices.has(i) || step !== 2)) {
+      if (
+        userSlots[i] !== null &&
+        cleanTarget[i] !== " " &&
+        (!initialFixedIndices.has(i) || step !== 2)
+      ) {
         handleSlotClick(i);
         break;
       }
@@ -139,6 +155,9 @@ export default function ScrambleKeyboard({
     playClickSound();
     setUserSlots(
       cleanTarget.split("").map((char, idx) => {
+        if (char === " ") {
+          return { id: `space-${idx}`, char: " ", used: true };
+        }
         if (step === 2 && initialFixedIndices.has(idx)) {
           return { id: `fixed-${idx}`, char, used: true };
         }
@@ -148,7 +167,7 @@ export default function ScrambleKeyboard({
     setBlocks((prev) => prev.map((b) => ({ ...b, used: false })));
   };
 
-  // 물리 키보드 입력 지원 (데스크톱/노트북 사용자 배려)
+  // 물리 키보드 입력 지원 (대소문자 무관 타이핑 매칭)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (disabled) return;
@@ -164,11 +183,11 @@ export default function ScrambleKeyboard({
         return;
       }
 
-      const pressed = e.key.toLowerCase();
-      if (/^[a-z]$/.test(pressed)) {
-        // 사용 가능한 블록 중 일치하는 문자 찾기
+      const pressed = e.key;
+      if (/^[a-zA-Z]$/.test(pressed)) {
+        // 사용 가능한 블록 중 일치하는 문자 찾기 (대소문자 무관하게 매칭)
         const matchingBlock = blocks.find(
-          (b) => !b.used && b.char.toLowerCase() === pressed
+          (b) => !b.used && b.char.toLowerCase() === pressed.toLowerCase()
         );
         if (matchingBlock) {
           handleBlockClick(matchingBlock);
@@ -180,21 +199,27 @@ export default function ScrambleKeyboard({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [blocks, userSlots, disabled, cleanTarget, step]);
 
-  const currentAnswer = userSlots.map((s) => s?.char || "").join("");
-  const isComplete = userSlots.every((s) => s !== null);
-
   return (
     <div className="w-full flex flex-col items-center space-y-6">
-      {/* 1단계(눈과 귀): 전체 스펠링 힌트 살짝 노출 */}
+      {/* 1단계(눈과 귀): 전체 스펠링 힌트 살짝 노출 (원래 단어 형태) */}
       {step === 1 && (
         <div className="text-center py-1 px-4 bg-brand-50 border border-brand-200 rounded-full text-brand-700 font-extrabold text-sm sm:text-base tracking-widest animate-pulse">
-          따라 쓰기 가이드: <span className="underline">{cleanTarget.toUpperCase()}</span>
+          따라 쓰기 가이드: <span className="underline font-black">{cleanTarget}</span>
         </div>
       )}
 
-      {/* 문자 슬롯 (정답 글자 박스들) */}
+      {/* 문자 슬롯 (정답 글자 박스들 - 원래 단어 형태) */}
       <div className="flex flex-wrap justify-center gap-2 sm:gap-3 max-w-xl">
         {userSlots.map((slot, idx) => {
+          if (cleanTarget[idx] === " ") {
+            return (
+              <div
+                key={`slot-space-${idx}`}
+                className="w-3 sm:w-4 flex items-center justify-center select-none"
+              />
+            );
+          }
+
           const isFixed = step === 2 && initialFixedIndices.has(idx);
           const hasLetter = slot !== null;
 
@@ -212,13 +237,13 @@ export default function ScrambleKeyboard({
                   : "bg-slate-100 border-2 border-dashed border-slate-300 text-transparent"
               }`}
             >
-              {slot?.char.toUpperCase() || (step === 1 ? cleanTarget[idx].toUpperCase() : "_")}
+              {slot?.char || (step === 1 ? cleanTarget[idx] : "_")}
             </button>
           );
         })}
       </div>
 
-      {/* 스크램블 알파벳 블록 버튼들 (터치로 단어 완성) */}
+      {/* 스크램블 알파벳 블록 버튼들 (원래 단어 형태) */}
       <div className="w-full max-w-xl bg-slate-50 border-2 border-slate-200 rounded-3xl p-4 sm:p-5 shadow-inner">
         <div className="text-xs sm:text-sm font-bold text-slate-500 text-center mb-3">
           알파벳 블록을 터치하거나 키보드로 타이핑하세요!
@@ -237,7 +262,7 @@ export default function ScrambleKeyboard({
                   : "bg-sunny-300 hover:bg-sunny-400 active:scale-90 border-2 border-sunny-400 text-slate-800 shadow-playful-sunny cursor-pointer"
               }`}
             >
-              {block.char.toUpperCase()}
+              {block.char}
             </button>
           ))}
         </div>
