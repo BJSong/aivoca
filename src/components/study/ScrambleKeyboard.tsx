@@ -204,7 +204,7 @@ export default function ScrambleKeyboard({
       {/* 1단계(눈과 귀): 전체 스펠링 힌트 살짝 노출 (원래 단어 형태) */}
       {step === 1 && (
         <div className="text-center py-1 px-4 bg-brand-50 border border-brand-200 rounded-full text-brand-700 font-extrabold text-sm sm:text-base tracking-widest animate-pulse">
-          따라 쓰기 가이드: <span className="underline font-black">{cleanTarget}</span>
+          따라 쓰기 가이드: <span className="underline font-black normal-case">{cleanTarget}</span>
         </div>
       )}
 
@@ -229,7 +229,7 @@ export default function ScrambleKeyboard({
               type="button"
               disabled={disabled || isFixed}
               onClick={() => handleSlotClick(idx)}
-              className={`w-12 h-14 sm:w-14 sm:h-16 rounded-2xl flex items-center justify-center font-black text-2xl sm:text-3xl transition-all select-none ${
+              className={`w-12 h-14 sm:w-14 sm:h-16 rounded-2xl flex items-center justify-center font-black text-2xl sm:text-3xl normal-case transition-all select-none ${
                 isFixed
                   ? "bg-amber-100 border-2 border-amber-400 text-amber-900 shadow-sm cursor-default"
                   : hasLetter
@@ -256,7 +256,7 @@ export default function ScrambleKeyboard({
               type="button"
               disabled={disabled || block.used}
               onClick={() => handleBlockClick(block)}
-              className={`w-12 h-13 sm:w-14 sm:h-15 rounded-2xl font-black text-xl sm:text-2xl transition-all shadow-playful select-none ${
+              className={`w-12 h-13 sm:w-14 sm:h-15 rounded-2xl font-black text-xl sm:text-2xl normal-case transition-all shadow-playful select-none ${
                 block.used
                   ? "opacity-20 scale-90 bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed"
                   : "bg-sunny-300 hover:bg-sunny-400 active:scale-90 border-2 border-sunny-400 text-slate-800 shadow-playful-sunny cursor-pointer"
