@@ -141,25 +141,27 @@ export const SAMPLE_TED_DECK: DeckWithItems = {
   ],
 };
 
-// 1. 교재 사진 기반 단어장: TEDTALKS WORDS (pp. 74-75)
-export const TEXTBOOK_TED_DECK: DeckWithItems = {
-  id: "deck-tedtalks-p74-75",
-  title: "TEDTALKS WORDS (pp. 74-75)",
-  publisher: "TED-Ed Series",
-  book_name: "Reading for Real World",
+// 9주차 교재 단어장: TEDTALKS (pp. 74-75) & NOVEL (pp. 76-77) 통합 (총 16단어)
+export const WEEK9_TEXTBOOK_DECK: DeckWithItems = {
+  id: "deck-week9",
+  title: "9주차 단어장",
+  publisher: "9주차",
+  book_name: "TEDTALKS (pp.74-75) & NOVEL (pp.76-77)",
   target_grade: "초등 5~6학년",
   created_at: new Date().toISOString(),
-  items_count: 8,
+  items_count: 16,
   mastered_count: 0,
   extra_metadata: {
-    unit: "Unit 08",
-    theme: "Climate Change & Oceans (기후 변화와 해양)",
-    pages: "74-75",
+    week: "9주차",
+    theme: "Climate Change & Novel Adventure",
+    pages: "74-77",
+    ted_pages: "74-75",
+    novel_pages: "76-77",
   },
   items: [
     {
-      id: "word-ted-01-warn",
-      deck_id: "deck-tedtalks-p74-75",
+      id: "word-w9-01-warn",
+      deck_id: "deck-week9",
       word: "warn",
       part_of_speech: "verb",
       phonetic_symbol: "/wɔːrn/",
@@ -174,11 +176,11 @@ export const TEXTBOOK_TED_DECK: DeckWithItems = {
       ted_context:
         "Climate change is not a new topic, and scientists have long warned us that it can lead to dangerous consequences.",
       order_index: 0,
-      extra_metadata: { textbook_page: 74, source_page: 50 },
+      extra_metadata: { textbook_page: 74, source_page: 50, category: "TEDTALKS" },
     },
     {
-      id: "word-ted-02-consequence",
-      deck_id: "deck-tedtalks-p74-75",
+      id: "word-w9-02-consequence",
+      deck_id: "deck-week9",
       word: "consequence",
       part_of_speech: "noun",
       phonetic_symbol: "/ˈkɑːn.sə.kwəns/",
@@ -197,11 +199,11 @@ export const TEXTBOOK_TED_DECK: DeckWithItems = {
       ted_context:
         "Climate change is not a new topic, and scientists have long warned us that it can lead to dangerous consequences.",
       order_index: 1,
-      extra_metadata: { textbook_page: 74, source_page: 50 },
+      extra_metadata: { textbook_page: 74, source_page: 50, category: "TEDTALKS" },
     },
     {
-      id: "word-ted-03-impact",
-      deck_id: "deck-tedtalks-p74-75",
+      id: "word-w9-03-impact",
+      deck_id: "deck-week9",
       word: "impact",
       part_of_speech: "noun",
       phonetic_symbol: "/ˈɪm.pækt/",
@@ -216,11 +218,11 @@ export const TEXTBOOK_TED_DECK: DeckWithItems = {
       ted_context:
         "Maybe it seems as if most of the impact of climate change is in the future, so it's easier to worry about it later.",
       order_index: 2,
-      extra_metadata: { textbook_page: 74, source_page: 50 },
+      extra_metadata: { textbook_page: 74, source_page: 50, category: "TEDTALKS" },
     },
     {
-      id: "word-ted-04-spot",
-      deck_id: "deck-tedtalks-p74-75",
+      id: "word-w9-04-spot",
+      deck_id: "deck-week9",
       word: "spot",
       part_of_speech: "noun",
       phonetic_symbol: "/spɑːt/",
@@ -234,11 +236,11 @@ export const TEXTBOOK_TED_DECK: DeckWithItems = {
       ted_context:
         "The Maldives is in the warm waters of the Indian Ocean and is a very popular spot for tourists.",
       order_index: 3,
-      extra_metadata: { textbook_page: 74, source_page: 50 },
+      extra_metadata: { textbook_page: 74, source_page: 50, category: "TEDTALKS" },
     },
     {
-      id: "word-ted-05-tsunami",
-      deck_id: "deck-tedtalks-p74-75",
+      id: "word-w9-05-tsunami",
+      deck_id: "deck-week9",
       word: "tsunami",
       part_of_speech: "noun",
       phonetic_symbol: "/tsuːˈnɑː.mi/",
@@ -253,11 +255,11 @@ export const TEXTBOOK_TED_DECK: DeckWithItems = {
       ted_context:
         "The wall did give the city some protection from a tsunami in 2004. Although there was still a lot of flooding, the impact would have been much worse without it.",
       order_index: 4,
-      extra_metadata: { textbook_page: 75, source_page: 50 },
+      extra_metadata: { textbook_page: 75, source_page: 50, category: "TEDTALKS" },
     },
     {
-      id: "word-ted-06-artificial",
-      deck_id: "deck-tedtalks-p74-75",
+      id: "word-w9-06-artificial",
+      deck_id: "deck-week9",
       word: "artificial",
       part_of_speech: "adjective",
       phonetic_symbol: "/ˌɑːr.t̬əˈfɪʃ.əl/",
@@ -276,11 +278,11 @@ export const TEXTBOOK_TED_DECK: DeckWithItems = {
       ted_context:
         "In addition to the wall around Malé, the government took another step: building an artificial island about 2m above sea level.",
       order_index: 5,
-      extra_metadata: { textbook_page: 75, source_page: 50 },
+      extra_metadata: { textbook_page: 75, source_page: 50, category: "TEDTALKS" },
     },
     {
-      id: "word-ted-07-suitable",
-      deck_id: "deck-tedtalks-p74-75",
+      id: "word-w9-07-suitable",
+      deck_id: "deck-week9",
       word: "suitable",
       part_of_speech: "adjective",
       phonetic_symbol: "/ˈsuː.t̬ə.bəl/",
@@ -294,11 +296,11 @@ export const TEXTBOOK_TED_DECK: DeckWithItems = {
       ted_context:
         "Now, these measures may be suitable in the short term, but what would happen if all the world's ice melted?",
       order_index: 6,
-      extra_metadata: { textbook_page: 75, source_page: 50 },
+      extra_metadata: { textbook_page: 75, source_page: 50, category: "TEDTALKS" },
     },
     {
-      id: "word-ted-08-short-term",
-      deck_id: "deck-tedtalks-p74-75",
+      id: "word-w9-08-short-term",
+      deck_id: "deck-week9",
       word: "short term",
       part_of_speech: "noun",
       phonetic_symbol: "/ˌʃɔːrt ˈtɝːm/",
@@ -312,30 +314,11 @@ export const TEXTBOOK_TED_DECK: DeckWithItems = {
       ted_context:
         "Now, these measures may be suitable in the short term, but what would happen if all the world's ice melted?",
       order_index: 7,
-      extra_metadata: { textbook_page: 75, source_page: 50 },
+      extra_metadata: { textbook_page: 75, source_page: 50, category: "TEDTALKS" },
     },
-  ],
-};
-
-// 2. 교재 사진 기반 단어장: NOVEL WORDS (pp. 76-77)
-export const TEXTBOOK_NOVEL_DECK: DeckWithItems = {
-  id: "deck-novel-p76-77",
-  title: "NOVEL WORDS (pp. 76-77)",
-  publisher: "Literature Readers",
-  book_name: "James and the Giant Peach",
-  target_grade: "초등 5~6학년",
-  created_at: new Date().toISOString(),
-  items_count: 8,
-  mastered_count: 0,
-  extra_metadata: {
-    unit: "Chapter Words",
-    theme: "Adventures of James & Friends",
-    pages: "76-77",
-  },
-  items: [
     {
-      id: "word-nov-09-affectionately",
-      deck_id: "deck-novel-p76-77",
+      id: "word-w9-09-affectionately",
+      deck_id: "deck-week9",
       word: "affectionately",
       part_of_speech: "adverb",
       phonetic_symbol: "/əˈfek.ʃən.ət.li/",
@@ -352,12 +335,12 @@ export const TEXTBOOK_NOVEL_DECK: DeckWithItems = {
         "Lily smiled affectionately at her cat as she stroked it lovingly.",
       ted_context:
         `"My dear James," said the Old-Green-Grasshopper, laying a front leg affectionately on James's shoulder...`,
-      order_index: 0,
-      extra_metadata: { textbook_page: 76, source_page: 60 },
+      order_index: 8,
+      extra_metadata: { textbook_page: 76, source_page: 60, category: "NOVEL" },
     },
     {
-      id: "word-nov-10-pickled",
-      deck_id: "deck-novel-p76-77",
+      id: "word-w9-10-pickled",
+      deck_id: "deck-week9",
       word: "pickled",
       part_of_speech: "adjective",
       phonetic_symbol: "/ˈpɪk.əld/",
@@ -374,12 +357,12 @@ export const TEXTBOOK_NOVEL_DECK: DeckWithItems = {
         "The pickled cucumbers will add a tangy flavor to the sandwich.",
       ted_context:
         `"And pickled spines of porcupines. And then a gorgeous roast / Of dragon's flesh, well hung, not fresh..."`,
-      order_index: 1,
-      extra_metadata: { textbook_page: 76, source_page: 64 },
+      order_index: 9,
+      extra_metadata: { textbook_page: 76, source_page: 64, category: "NOVEL" },
     },
     {
-      id: "word-nov-11-bait",
-      deck_id: "deck-novel-p76-77",
+      id: "word-w9-11-bait",
+      deck_id: "deck-week9",
       word: "bait",
       part_of_speech: "noun",
       phonetic_symbol: "/beɪt/",
@@ -392,12 +375,12 @@ export const TEXTBOOK_NOVEL_DECK: DeckWithItems = {
         "Sometimes, fishermen use lures as bait to catch bigger fish.",
       ted_context:
         `"Bait! What sort of bait?" "With a worm, of course. Seagulls love worms, didn't you know that?..."`,
-      order_index: 2,
-      extra_metadata: { textbook_page: 76, source_page: 72 },
+      order_index: 10,
+      extra_metadata: { textbook_page: 76, source_page: 72, category: "NOVEL" },
     },
     {
-      id: "word-nov-12-tether",
-      deck_id: "deck-novel-p76-77",
+      id: "word-w9-12-tether",
+      deck_id: "deck-week9",
       word: "tether",
       part_of_speech: "verb",
       phonetic_symbol: "/ˈteð.ɚ/",
@@ -411,12 +394,12 @@ export const TEXTBOOK_NOVEL_DECK: DeckWithItems = {
         "Windy tethered her dog outside and made sure that the leash was tied tightly.",
       ted_context:
         "And the seagulls kept coming, and James caught them one after the other and tethered them to the peach stem.",
-      order_index: 3,
-      extra_metadata: { textbook_page: 76, source_page: 78 },
+      order_index: 11,
+      extra_metadata: { textbook_page: 76, source_page: 78, category: "NOVEL" },
     },
     {
-      id: "word-nov-13-hurl",
-      deck_id: "deck-novel-p76-77",
+      id: "word-w9-13-hurl",
+      deck_id: "deck-week9",
       word: "hurl",
       part_of_speech: "verb",
       phonetic_symbol: "/hɝːl/",
@@ -430,12 +413,12 @@ export const TEXTBOOK_NOVEL_DECK: DeckWithItems = {
         "In a fit of fury, Colin hurled everything from his desk to the floor.",
       ted_context:
         "The sharks... were hurling themselves at the peach more furiously than ever...",
-      order_index: 4,
-      extra_metadata: { textbook_page: 77, source_page: 78 },
+      order_index: 12,
+      extra_metadata: { textbook_page: 77, source_page: 78, category: "NOVEL" },
     },
     {
-      id: "word-nov-14-froth",
-      deck_id: "deck-novel-p76-77",
+      id: "word-w9-14-froth",
+      deck_id: "deck-week9",
       word: "froth",
       part_of_speech: "noun",
       phonetic_symbol: "/frɑːθ/",
@@ -449,12 +432,12 @@ export const TEXTBOOK_NOVEL_DECK: DeckWithItems = {
         "The top of the hot chocolate was covered in froth, making it look delicious.",
       ted_context:
         `"But there were hundreds of sharks around us!" They churned the water into a froth!`,
-      order_index: 5,
-      extra_metadata: { textbook_page: 77, source_page: 82 },
+      order_index: 13,
+      extra_metadata: { textbook_page: 77, source_page: 82, category: "NOVEL" },
     },
     {
-      id: "word-nov-15-funnel",
-      deck_id: "deck-novel-p76-77",
+      id: "word-w9-15-funnel",
+      deck_id: "deck-week9",
       word: "funnel",
       part_of_speech: "noun",
       phonetic_symbol: "/ˈfʌn.əl/",
@@ -472,12 +455,12 @@ export const TEXTBOOK_NOVEL_DECK: DeckWithItems = {
         "Smoke came out of the ship's funnel as it glided over the ocean.",
       ted_context:
         `None of them had ever seen a ship before: "It looks like a big one." "It's got three funnels."`,
-      order_index: 6,
-      extra_metadata: { textbook_page: 77, source_page: 82 },
+      order_index: 14,
+      extra_metadata: { textbook_page: 77, source_page: 82, category: "NOVEL" },
     },
     {
-      id: "word-nov-16-mammoth",
-      deck_id: "deck-novel-p76-77",
+      id: "word-w9-16-mammoth",
+      deck_id: "deck-week9",
       word: "mammoth",
       part_of_speech: "adjective",
       phonetic_symbol: "/ˈmæm.əθ/",
@@ -490,15 +473,31 @@ export const TEXTBOOK_NOVEL_DECK: DeckWithItems = {
         "Some dinosaurs were mammoth creatures with enormous bodies.",
       ted_context:
         `'Captain!' the First Officer said sharply. 'Captain, please!' 'And a mammoth spider!'`,
-      order_index: 7,
-      extra_metadata: { textbook_page: 77, source_page: 85 },
+      order_index: 15,
+      extra_metadata: { textbook_page: 77, source_page: 85, category: "NOVEL" },
     },
   ],
 };
 
+// 하위 호환성 유지용 (TEDTALKS pp.74-75, NOVEL pp.76-77)
+export const TEXTBOOK_TED_DECK: DeckWithItems = {
+  ...WEEK9_TEXTBOOK_DECK,
+  id: "deck-tedtalks-p74-75",
+  title: "TEDTALKS WORDS (pp. 74-75)",
+  items_count: 8,
+  items: WEEK9_TEXTBOOK_DECK.items.slice(0, 8),
+};
+
+export const TEXTBOOK_NOVEL_DECK: DeckWithItems = {
+  ...WEEK9_TEXTBOOK_DECK,
+  id: "deck-novel-p76-77",
+  title: "NOVEL WORDS (pp. 76-77)",
+  items_count: 8,
+  items: WEEK9_TEXTBOOK_DECK.items.slice(8, 16),
+};
+
 export const INITIAL_DEFAULT_DECKS: DeckWithItems[] = [
-  TEXTBOOK_TED_DECK,
-  TEXTBOOK_NOVEL_DECK,
+  WEEK9_TEXTBOOK_DECK,
   SAMPLE_TED_DECK,
 ];
 
@@ -591,11 +590,19 @@ export function getLocalDecks(): DeckWithItems[] {
       storage.setItem(STORAGE_KEYS.DECKS, JSON.stringify(INITIAL_DEFAULT_DECKS));
       return INITIAL_DEFAULT_DECKS;
     }
-    const decks: DeckWithItems[] = JSON.parse(raw);
+    let decks: DeckWithItems[] = JSON.parse(raw);
     let changed = false;
+
+    // 이전 분리된 임시 단어장(deck-tedtalks-p74-75, deck-novel-p76-77)을 9주차 통합 단어장으로 자동 정리
+    const oldSplitIds = ["deck-tedtalks-p74-75", "deck-novel-p76-77"];
+    if (decks.some((d) => oldSplitIds.includes(d.id))) {
+      decks = decks.filter((d) => !oldSplitIds.includes(d.id));
+      changed = true;
+    }
+
     INITIAL_DEFAULT_DECKS.forEach((initDeck) => {
       if (!decks.some((d) => d.id === initDeck.id)) {
-        decks.push(initDeck);
+        decks.unshift(initDeck);
         changed = true;
       }
     });

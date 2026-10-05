@@ -5,6 +5,7 @@
 import { calculateNextSRS, isWordDueForReview } from "../src/lib/srs";
 import {
   SAMPLE_TED_DECK,
+  WEEK9_TEXTBOOK_DECK,
   TEXTBOOK_TED_DECK,
   TEXTBOOK_NOVEL_DECK,
   INITIAL_DEFAULT_DECKS,
@@ -161,26 +162,28 @@ async function runAllTests() {
     "단어 아이템에 collocations(연어) 배열 존재 확인"
   );
 
-  // 교재 사진 기반 신규 단어장 검증 (TEDTALKS pp.74-75, NOVEL pp.76-77)
-  assert(TEXTBOOK_TED_DECK.items.length === 8, "교재 TEDTALKS 단어장 단어 수 8개 확인");
-  assert(TEXTBOOK_NOVEL_DECK.items.length === 8, "교재 NOVEL 단어장 단어 수 8개 확인");
-  assert(INITIAL_DEFAULT_DECKS.length >= 3, "기본 단어장 목록에 신규 단어장 2종 포함 확인");
+  // 교재 사진 기반 9주차 통합 단어장 검증 (TEDTALKS pp.74-75 & NOVEL pp.76-77, 총 16단어)
+  assert(WEEK9_TEXTBOOK_DECK.items.length === 16, "9주차 통합 단어장 단어 수 16개 확인");
+  assert(WEEK9_TEXTBOOK_DECK.title === "9주차 단어장", "9주차 단어장 타이틀 확인");
+  assert(
+    INITIAL_DEFAULT_DECKS.some((d) => d.id === "deck-week9"),
+    "기본 단어장 목록에 9주차 단어장 포함 확인"
+  );
 
   const validEnglishPos = ["noun", "verb", "adjective", "adverb", "preposition"];
-  const allTextbookItems = [...TEXTBOOK_TED_DECK.items, ...TEXTBOOK_NOVEL_DECK.items];
-  const allPosValid = allTextbookItems.every((item) =>
+  const allPosValid = WEEK9_TEXTBOOK_DECK.items.every((item) =>
     validEnglishPos.includes(item.part_of_speech.toLowerCase())
   );
   assert(allPosValid, "신규 교재 단어 16종 모두 영어 품사(noun, verb, adjective, adverb) 지정 확인");
 
   const loadedDefaultDecks = getLocalDecks();
   assert(
-    loadedDefaultDecks.some((d) => d.id === "deck-tedtalks-p74-75"),
-    "getLocalDecks()에서 TEDTALKS pp.74-75 단어장 로드 확인"
+    loadedDefaultDecks.some((d) => d.id === "deck-week9"),
+    "getLocalDecks()에서 9주차 단어장(deck-week9) 로드 확인"
   );
   assert(
-    loadedDefaultDecks.some((d) => d.id === "deck-novel-p76-77"),
-    "getLocalDecks()에서 NOVEL pp.76-77 단어장 로드 확인"
+    TEXTBOOK_TED_DECK.items.length === 8 && TEXTBOOK_NOVEL_DECK.items.length === 8,
+    "하위 호환성용 TED/NOVEL 개별 덱 단어 수(각 8개) 확인"
   );
 
   // 새 단어장 생성 테스트 (출판사, 메타데이터 포함)
