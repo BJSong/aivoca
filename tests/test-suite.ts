@@ -23,6 +23,7 @@ import {
 } from "../src/lib/storage";
 import { getLevenshteinDistance, analyzeTypo } from "../src/lib/levenshtein";
 import { getEnglishPartOfSpeech, generateVocabQuiz } from "../src/lib/vocab-utils";
+import { parseGeminiDeckJson, SAMPLE_GEMINI_JSON } from "../src/lib/gemini-importer";
 import {
   playCorrectSound,
   playIncorrectSound,
@@ -463,6 +464,42 @@ async function runAllTests() {
   assert(posQuiz !== null && posQuiz.type === "part_of_speech", "동/반의어 부재 시 영문 품사 퀴즈로 출제");
   assert(posQuiz !== null && posQuiz.correctAnswer === "Noun", "품사 퀴즈 정답이 영문 'Noun'으로 정확히 일치");
   assert(posQuiz !== null && posQuiz.options.includes("Noun"), "품사 퀴즈 선택지에 정답 'Noun' 포함");
+
+  // -------------------------------------------------------------
+  // 10. 제미나이 앱 JSON 가져오기 파서
+  // -------------------------------------------------------------
+  group("10. 제미나이 앱 JSON 가져오기 파서 (AI 비용 0원)");
+
+  const sampleParsed = parseGeminiDeckJson(SAMPLE_GEMINI_JSON);
+  assert(sampleParsed.deck_title === "10주차 단어장", "샘플 JSON: deck_title 파싱");
+  assert(sampleParsed.words.length === 2, "샘플 JSON: 단어 2개 파싱");
+  assert(sampleParsed.words[1].part_of_speech === "verb", "샘플 JSON: 영문 품사 유지");
+
+  const fenced = "물론이죠! 결과입니다.\n```json\n" + SAMPLE_GEMINI_JSON + "\n```\n도움이 되었길 바랍니다.";
+  assert(parseGeminiDeckJson(fenced).words.length === 2, "코드블록 + 앞뒤 설명 텍스트 자동 제거");
+
+  const arrOnly = parseGeminiDeckJson(
+    '[{"word":"Brave","part_of_speech":"형용사","meaning":"용감한","synonyms":["bold"]}]'
+  );
+  assert(arrOnly.words.length === 1, "배열만 단독 입력 시 파싱");
+  assert(arrOnly.words[0].part_of_speech === "adjective", "한국어 품사(형용사) → 영어 adjective 정규화");
+  assert(arrOnly.words[0].korean_definition === "용감한", "meaning 필드를 korean_definition으로 매핑");
+
+  let invalidThrown = false;
+  try {
+    parseGeminiDeckJson("{ invalid json");
+  } catch {
+    invalidThrown = true;
+  }
+  assert(invalidThrown, "잘못된 JSON 입력 시 에러 발생");
+
+  let emptyThrown = false;
+  try {
+    parseGeminiDeckJson('{"deck_title":"x","words":[]}');
+  } catch {
+    emptyThrown = true;
+  }
+  assert(emptyThrown, "단어 0개 입력 시 에러 발생");
 
   // ==================== Summary ====================
   console.log("\n==================================================");

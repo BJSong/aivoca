@@ -155,6 +155,22 @@ export default function HomePage() {
             </div>
           </div>
         </Link>
+
+        <Link
+          href="/decks/import"
+          className="group mt-3 flex items-center justify-between gap-3 w-full bg-white hover:bg-brand-50 border-2 border-brand-200 rounded-2xl px-5 py-4 transition-all"
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">💬</span>
+            <div>
+              <p className="font-black text-slate-800">제미나이 앱 JSON으로 만들기</p>
+              <p className="text-xs font-semibold text-slate-500">
+                무료 제미나이 앱에서 추출 → 붙여넣기 (AI 비용 0원)
+              </p>
+            </div>
+          </div>
+          <ArrowRight className="w-5 h-5 text-brand-500 group-hover:translate-x-1 transition-transform" />
+        </Link>
       </section>
 
       {/* 3. 오늘의 SRS 복습 퀘스트 배너 */}
