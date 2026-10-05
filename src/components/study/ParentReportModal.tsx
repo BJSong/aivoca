@@ -71,7 +71,7 @@ export default function ParentReportModal({
             <div className="w-14 h-14 rounded-2xl bg-sunny-100 text-amber-600 flex items-center justify-center text-3xl mx-auto shadow-playful-sunny animate-bounce">
               💌
             </div>
-            <span className="text-xs font-black text-brand-600 bg-brand-50 px-3 py-1 rounded-full uppercase">
+            <span className="text-xs font-black text-brand-600 bg-brand-50 px-3 py-1 rounded-full">
               학부모 칭찬 공유 카드
             </span>
             <h3 className="text-2xl font-black text-slate-800">

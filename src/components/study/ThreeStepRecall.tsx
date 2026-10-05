@@ -678,7 +678,7 @@ export default function ThreeStepRecall({
               </div>
 
               <div>
-                <span className="text-xs font-black text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full uppercase">
+                <span className="text-xs font-black text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">
                   단어 완벽 정복!
                 </span>
                 <h2 className="text-3xl sm:text-4xl font-black text-brand-700 tracking-tight mt-2">
