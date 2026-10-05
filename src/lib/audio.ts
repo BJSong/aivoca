@@ -47,6 +47,34 @@ export function playCorrectSound() {
   });
 }
 
+/** 콤보(연속 정답) 시 점진적으로 음이 올라가는 경쾌한 사운드 */
+export function playComboSound(combo: number = 1) {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  // 도-레-미-파-솔-라-시-도 스케일
+  const scale = [523.25, 587.33, 659.25, 698.46, 783.99, 880.0, 987.77, 1046.5];
+  const noteIndex = Math.min(Math.max(combo - 1, 0), scale.length - 1);
+  const baseFreq = scale[noteIndex];
+
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.25, ctx.currentTime + 0.12);
+
+  gain.gain.setValueAtTime(0, ctx.currentTime);
+  gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.start(ctx.currentTime);
+  osc.stop(ctx.currentTime + 0.29);
+}
+
 /** 오답 시 부드러운 우당탕/흔들림 음 (낮은 톤의 부드러운 알림음) */
 export function playIncorrectSound() {
   const ctx = getAudioContext();

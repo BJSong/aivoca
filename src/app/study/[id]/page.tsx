@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import React, { useState, useEffect, Suspense } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Trophy, Sparkles, CheckCircle, Home, RotateCw, Share2 } from "lucide-react";
 import {
@@ -16,14 +16,19 @@ import ProgressBar from "@/components/common/ProgressBar";
 import ThreeStepRecall from "@/components/study/ThreeStepRecall";
 import MatchingGame from "@/components/study/MatchingGame";
 import StoryBlankGame from "@/components/study/StoryBlankGame";
+import SpeedMatchGame from "@/components/study/SpeedMatchGame";
+import WordBankCloze from "@/components/study/WordBankCloze";
+import SpellingSniper from "@/components/study/SpellingSniper";
 import Confetti from "@/components/common/Confetti";
 import ParentReportModal from "@/components/study/ParentReportModal";
 import { playFanfareSound } from "@/lib/audio";
 
-export default function StudyPage() {
+function StudyContent() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const deckId = params.id as string;
+  const mode = searchParams.get("mode") || "three-step";
 
   const [deck, setDeck] = useState<DeckWithItems | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -65,25 +70,25 @@ export default function StudyPage() {
   };
 
   const handleMatchingComplete = () => {
-    // 짝맞추기 보너스 XP (+30 XP)
     addXP(30);
     setEarnedXP((prev) => prev + 30);
-
-    // TED 스토리 문맥 퀴즈로 진입!
     setPhase("story");
   };
 
   const handleStoryComplete = () => {
-    // 스토리 보너스 XP (+20 XP)
     addXP(20);
     setEarnedXP((prev) => prev + 20);
-
-    // 일일 학습 스트릭 및 활동 기록
     recordStudyActivity();
-
-    // 최종 축하 화면
     setPhase("completed");
     playFanfareSound();
+  };
+
+  // 특화 모드 완료 처리 (스피드 매칭, 문맥 빈칸, 스펠링 스나이퍼)
+  const handleSpecialModeComplete = (modeName: string, xpBonus: number = 50) => {
+    addXP(xpBonus);
+    setEarnedXP((prev) => prev + xpBonus);
+    recordStudyActivity();
+    router.push(`/decks/${deckId}`);
   };
 
   if (!deck || deck.items.length === 0) {
@@ -103,6 +108,52 @@ export default function StudyPage() {
     );
   }
 
+  // 1. [신규 특화 모드 1] 스피드 10 매칭 (5+5 릴레이)
+  if (mode === "speed-match") {
+    return (
+      <div className="py-2">
+        <SpeedMatchGame
+          words={deck.items}
+          onComplete={(stats) => {
+            handleSpecialModeComplete("스피드 10 매칭", 50);
+          }}
+          onExit={() => router.push(`/decks/${deckId}`)}
+        />
+      </div>
+    );
+  }
+
+  // 2. [신규 특화 모드 2] 5문장 문맥 빈칸 챌린지 (Word Bank)
+  if (mode === "word-bank") {
+    return (
+      <div className="py-2">
+        <WordBankCloze
+          words={deck.items}
+          onComplete={() => {
+            handleSpecialModeComplete("문맥 빈칸 챌린지", 50);
+          }}
+          onExit={() => router.push(`/decks/${deckId}`)}
+        />
+      </div>
+    );
+  }
+
+  // 3. [신규 특화 모드 3] 스펠링 스나이퍼 (혼동 철자 저격)
+  if (mode === "spelling-sniper") {
+    return (
+      <div className="py-2">
+        <SpellingSniper
+          words={deck.items}
+          onComplete={() => {
+            handleSpecialModeComplete("스펠링 스나이퍼", 50);
+          }}
+          onExit={() => router.push(`/decks/${deckId}`)}
+        />
+      </div>
+    );
+  }
+
+  // 4. [기본 모드] 3단계 능동적 인출 훈련 파이프라인
   const currentWord = deck.items[currentIndex];
 
   return (
@@ -112,8 +163,8 @@ export default function StudyPage() {
         <button
           type="button"
           onClick={() => {
-            if (confirm("학습을 중단하고 홈으로 돌아가시겠어요?")) {
-              router.push("/");
+            if (confirm("학습을 중단하고 단어장으로 돌아가시겠어요?")) {
+              router.push(`/decks/${deckId}`);
             }
           }}
           className="p-2 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 active:scale-95"
@@ -198,68 +249,78 @@ export default function StudyPage() {
           {/* 획득 보상 요약 */}
           <div className="grid grid-cols-2 gap-3 max-w-xs mx-auto">
             <div className="bg-indigo-50 border border-indigo-200 p-3 rounded-2xl">
-              <span className="block text-xs font-bold text-brand-600">
-                획득 경험치
-              </span>
-              <span className="font-black text-brand-700 text-xl">
-                +{earnedXP} XP
+              <span className="block text-xs font-bold text-indigo-400">학습한 단어</span>
+              <span className="text-2xl font-black text-indigo-700">
+                {deck.items.length}단어
               </span>
             </div>
-
-            <div className="bg-orange-50 border border-orange-200 p-3 rounded-2xl">
-              <span className="block text-xs font-bold text-orange-600">
-                연속 출석
-              </span>
-              <span className="font-black text-orange-600 text-xl">
-                🔥 스트릭 유지
+            <div className="bg-amber-50 border border-amber-200 p-3 rounded-2xl">
+              <span className="block text-xs font-bold text-amber-400">획득 경험치</span>
+              <span className="text-2xl font-black text-amber-600">
+                +{earnedXP} XP
               </span>
             </div>
           </div>
 
-          {/* 액션 버튼들 */}
-          <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4">
-            <button
-              type="button"
-              onClick={() => setIsReportOpen(true)}
-              className="btn-touch bg-sunny-400 hover:bg-sunny-500 text-slate-900 rounded-2xl font-black shadow-playful-sunny"
-            >
-              <Share2 className="w-5 h-5" />
-              <span>엄마/아빠에게 자랑하기 💌</span>
-            </button>
+          {/* 학부모 칭찬 공유 버튼 */}
+          <button
+            type="button"
+            onClick={() => setIsReportOpen(true)}
+            className="w-full max-w-xs mx-auto btn-touch py-3 bg-sunny-100 hover:bg-sunny-200 border-2 border-sunny-400 text-amber-900 rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-playful-sunny"
+          >
+            <Share2 className="w-4 h-4 text-amber-600" />
+            <span>부모님께 칭찬 카드 보내기 💌</span>
+          </button>
 
+          {/* 복귀 버튼들 */}
+          <div className="flex gap-3 max-w-xs mx-auto pt-2">
             <button
               type="button"
               onClick={() => {
                 setCurrentIndex(0);
                 setSubStep(1);
                 setPhase("recall");
-                setEarnedXP(0);
               }}
-              className="btn-touch bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl font-black"
+              className="flex-1 btn-touch py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl font-black text-sm flex items-center justify-center gap-1.5"
             >
-              <RotateCw className="w-5 h-5" />
-              <span>한 번 더 복습하기</span>
+              <RotateCw className="w-4 h-4" />
+              <span>다시 학습</span>
             </button>
-
             <Link
-              href="/"
-              className="btn-touch bg-brand-500 hover:bg-brand-600 text-white rounded-2xl font-black shadow-playful-brand"
+              href={`/decks/${deck.id}`}
+              className="flex-1 btn-touch py-3 bg-brand-500 hover:bg-brand-600 text-white rounded-2xl font-black text-sm shadow-playful-brand flex items-center justify-center gap-1.5"
             >
-              <Home className="w-5 h-5" />
-              <span>홈 대시보드</span>
+              <Home className="w-4 h-4" />
+              <span>단어장으로</span>
             </Link>
           </div>
-
-          {/* 학부모 칭찬 리포트 모달 */}
-          <ParentReportModal
-            isOpen={isReportOpen}
-            onClose={() => setIsReportOpen(false)}
-            profile={profile}
-            earnedXP={earnedXP}
-            completedWords={deck.items}
-          />
         </div>
       )}
+
+      {/* 학부모 칭찬 카드 모달 */}
+      {isReportOpen && profile && (
+        <ParentReportModal
+          isOpen={isReportOpen}
+          onClose={() => setIsReportOpen(false)}
+          profile={profile}
+          earnedXP={earnedXP}
+          completedWords={deck.items}
+        />
+      )}
     </div>
+  );
+}
+
+export default function StudyPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="card-chunky text-center py-16 text-slate-400 font-bold">
+          학습 모드를 준비하고 있습니다...
+        </div>
+      }
+    >
+      <StudyContent />
+    </Suspense>
   );
 }

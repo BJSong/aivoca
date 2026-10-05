@@ -30,9 +30,11 @@ import {
   playIncorrectSound,
   playClickSound,
   playFanfareSound,
+  playComboSound,
   speakWord,
   speakSentence,
 } from "../src/lib/audio";
+import { generateSpellingTrap } from "../src/lib/spelling-traps";
 import { POST as ocrHandler } from "../src/app/api/ocr/parse-deck/route";
 import { NextRequest } from "next/server";
 
@@ -518,6 +520,68 @@ async function runAllTests() {
     emptyThrown = true;
   }
   assert(emptyThrown, "단어 0개 입력 시 에러 발생");
+
+  // -------------------------------------------------------------
+  // 11. 3대 신규 특화 훈련 모드 (스피드 매칭, 문맥 단어은행, 스펠링 스나이퍼)
+  // -------------------------------------------------------------
+  group("11. 3대 신규 특화 훈련 모드 & 철자 함정(Spelling Trap) 엔진");
+
+  // 1) vision: io vs oi 모음 순서 감지
+  const trapVision = generateSpellingTrap({ id: "w-v", word: "vision" });
+  assert(trapVision.correctChunk === "io", "vision: 정답 철자 'io' 추출");
+  assert(trapVision.prefix === "vis", "vision: prefix 'vis' 추출");
+  assert(trapVision.suffix === "n", "vision: suffix 'n' 추출");
+  assert(trapVision.options.includes("oi"), "vision: 헷갈리는 함정 'oi' 포함");
+  assert(trapVision.trapType === "vowel_pair", "vision: 모음 쌍 혼동 타입");
+
+  // 2) exaggerate: gg vs g 이중자음 감지
+  const trapExagg = generateSpellingTrap({ id: "w-e", word: "exaggerate" });
+  assert(trapExagg.correctChunk === "gg", "exaggerate: 정답 철자 'gg' 추출");
+  assert(trapExagg.options.includes("g"), "exaggerate: 단일자음 'g' 함정 포함");
+  assert(trapExagg.trapType === "double_consonant", "exaggerate: 이중 자음 타입");
+
+  // 3) deviate: i vs e 모음 혼동 감지
+  const trapDeviate = generateSpellingTrap({ id: "w-d", word: "deviate" });
+  assert(trapDeviate.correctChunk === "i", "deviate: 정답 철자 'i' 추출");
+  assert(trapDeviate.options.includes("e"), "deviate: 유사모음 'e' 함정 포함");
+
+  // 4) short term: er vs ur R-동화 모음 감지
+  const trapTerm = generateSpellingTrap({ id: "w-t", word: "short term" });
+  assert(trapTerm.correctChunk === "er", "short term: 정답 철자 'er' 추출");
+  assert(trapTerm.options.includes("ur"), "short term: 'ur' 함정 포함");
+
+  // 5) 8주차 교재 단어 20종 전수 테스트
+  const allWeek8Valid = WEEK8_TEXTBOOK_DECK.items.every((item) => {
+    const t = generateSpellingTrap(item);
+    return (
+      t.options.length >= 2 &&
+      t.options.includes(t.correctChunk) &&
+      t.prefix + t.correctChunk + t.suffix === item.word
+    );
+  });
+  assert(allWeek8Valid, "8주차 교재 단어 20종 모두 유효한 철자 함정 생성");
+
+  // 6) 9주차 교재 단어 16종 전수 테스트
+  const allWeek9Valid = WEEK9_TEXTBOOK_DECK.items.every((item) => {
+    const t = generateSpellingTrap(item);
+    return (
+      t.options.length >= 2 &&
+      t.options.includes(t.correctChunk) &&
+      t.prefix + t.correctChunk + t.suffix === item.word
+    );
+  });
+  assert(allWeek9Valid, "9주차 교재 단어 16종 모두 유효한 철자 함정 생성");
+
+  // 7) 콤보 효과음(playComboSound) SSR 환경 안전성 검증
+  let soundSafe = true;
+  try {
+    playComboSound(1);
+    playComboSound(5);
+    playComboSound(10);
+  } catch {
+    soundSafe = false;
+  }
+  assert(soundSafe, "playComboSound(콤보음) SSR 환경 안전 통과");
 
   // ==================== Summary ====================
   console.log("\n==================================================");

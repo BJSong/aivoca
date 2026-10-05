@@ -17,6 +17,8 @@ import {
   Building,
   Eye,
   EyeOff,
+  Zap,
+  Crosshair,
 } from "lucide-react";
 import { getDeckWordsWithProgress, getLocalDeckById } from "@/lib/storage";
 import { DeckWithItems, WordWithProgress } from "@/types/vocab";
@@ -151,6 +153,116 @@ export default function DeckDetailPage() {
               </span>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* 맞춤 학습 훈련 모드 4종 */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between px-1">
+          <h3 className="font-black text-lg text-slate-800">
+            맞춤 훈련 모드 🎯
+          </h3>
+          <span className="text-xs font-bold text-slate-400">
+            원하는 방식으로 집중 암기하세요
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* 1. 3단계 능동적 인출 */}
+          <Link
+            href={`/study/${deck.id}?mode=three-step`}
+            className="btn-touch p-4 bg-white hover:bg-brand-50/50 border-2 border-slate-200 hover:border-brand-400 rounded-2xl shadow-card transition-all flex items-center justify-between group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center font-black text-xl group-hover:scale-110 transition-transform">
+                🚀
+              </div>
+              <div className="text-left">
+                <div className="text-sm font-black text-slate-800 flex items-center gap-1.5">
+                  <span>3단계 인출 훈련</span>
+                  <span className="text-[10px] px-1.5 py-0.5 bg-brand-100 text-brand-700 rounded-md font-bold">
+                    기본 코스
+                  </span>
+                </div>
+                <div className="text-xs text-slate-400 font-semibold mt-0.5">
+                  눈과 귀 ➔ 페이딩 ➔ 완전 인출
+                </div>
+              </div>
+            </div>
+            <Play className="w-4 h-4 text-slate-300 group-hover:text-brand-500 fill-current transition-colors" />
+          </Link>
+
+          {/* 2. 스피드 10 매칭 (5+5 릴레이) */}
+          <Link
+            href={`/study/${deck.id}?mode=speed-match`}
+            className="btn-touch p-4 bg-white hover:bg-amber-50/50 border-2 border-slate-200 hover:border-amber-400 rounded-2xl shadow-card transition-all flex items-center justify-between group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-black text-xl group-hover:scale-110 transition-transform">
+                ⚡
+              </div>
+              <div className="text-left">
+                <div className="text-sm font-black text-slate-800 flex items-center gap-1.5">
+                  <span>스피드 10 매칭</span>
+                  <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-md font-bold">
+                    5+5 릴레이
+                  </span>
+                </div>
+                <div className="text-xs text-slate-400 font-semibold mt-0.5">
+                  10단어 영-한 의미 고속 연결 콤보
+                </div>
+              </div>
+            </div>
+            <Zap className="w-4 h-4 text-slate-300 group-hover:text-amber-500 transition-colors" />
+          </Link>
+
+          {/* 3. 문맥 빈칸 챌린지 (Word Bank) */}
+          <Link
+            href={`/study/${deck.id}?mode=word-bank`}
+            className="btn-touch p-4 bg-white hover:bg-emerald-50/50 border-2 border-slate-200 hover:border-emerald-400 rounded-2xl shadow-card transition-all flex items-center justify-between group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-black text-xl group-hover:scale-110 transition-transform">
+                📖
+              </div>
+              <div className="text-left">
+                <div className="text-sm font-black text-slate-800 flex items-center gap-1.5">
+                  <span>문맥 빈칸 챌린지</span>
+                  <span className="text-[10px] px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded-md font-bold">
+                    Word Bank
+                  </span>
+                </div>
+                <div className="text-xs text-slate-400 font-semibold mt-0.5">
+                  5개 문장 속 빈칸 채우기 & 품사 힌트
+                </div>
+              </div>
+            </div>
+            <BookOpen className="w-4 h-4 text-slate-300 group-hover:text-emerald-500 transition-colors" />
+          </Link>
+
+          {/* 4. 스펠링 스나이퍼 */}
+          <Link
+            href={`/study/${deck.id}?mode=spelling-sniper`}
+            className="btn-touch p-4 bg-white hover:bg-rose-50/50 border-2 border-slate-200 hover:border-rose-400 rounded-2xl shadow-card transition-all flex items-center justify-between group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center font-black text-xl group-hover:scale-110 transition-transform">
+                🎯
+              </div>
+              <div className="text-left">
+                <div className="text-sm font-black text-slate-800 flex items-center gap-1.5">
+                  <span>스펠링 스나이퍼</span>
+                  <span className="text-[10px] px-1.5 py-0.5 bg-rose-100 text-rose-700 rounded-md font-bold">
+                    철자 저격
+                  </span>
+                </div>
+                <div className="text-xs text-slate-400 font-semibold mt-0.5">
+                  헷갈리는 철자 구간 집중 타격
+                </div>
+              </div>
+            </div>
+            <Crosshair className="w-4 h-4 text-slate-300 group-hover:text-rose-500 transition-colors" />
+          </Link>
         </div>
       </div>
 
