@@ -1074,6 +1074,9 @@ export function saveLocalDecks(decks: DeckWithItems[]): void {
   if (!storage) return;
   try {
     storage.setItem(STORAGE_KEYS.DECKS, JSON.stringify(decks));
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("aivoca_decks_updated"));
+    }
   } catch (err) {
     console.error("Failed to save decks:", err);
   }
@@ -1125,6 +1128,136 @@ export function createLocalDeck(
   decks.unshift(newDeck);
   saveLocalDecks(decks);
   return newDeck;
+}
+
+/**
+ * 기존 단어장의 정보(제목, 출판사, 교재명, 학년 등) 또는 단어 목록 전체 업데이트
+ */
+export function updateLocalDeck(
+  deckId: string,
+  updates: Partial<DeckWithItems>
+): DeckWithItems | null {
+  const decks = getLocalDecks();
+  const index = decks.findIndex((d) => d.id === deckId);
+  if (index === -1) return null;
+
+  const current = decks[index];
+  const items = updates.items || current.items;
+
+  const updatedDeck: DeckWithItems = {
+    ...current,
+    ...updates,
+    items,
+    items_count: items.length,
+  };
+
+  decks[index] = updatedDeck;
+  saveLocalDecks(decks);
+  return updatedDeck;
+}
+
+/**
+ * 기존 단어장에 여러 단어를 일괄 추가 (JSON 임포트 또는 복수 단어 추가)
+ */
+export function addWordsToLocalDeck(
+  deckId: string,
+  newWords: Omit<VocabItem, "id" | "deck_id" | "order_index">[],
+  skipDuplicates: boolean = true
+): { deck: DeckWithItems; addedCount: number; updatedCount: number } | null {
+  const decks = getLocalDecks();
+  const deck = decks.find((d) => d.id === deckId);
+  if (!deck) return null;
+
+  let addedCount = 0;
+  let updatedCount = 0;
+  const existingWordMap = new Map<string, VocabItem>();
+  deck.items.forEach((item) => {
+    existingWordMap.set(item.word.toLowerCase().trim(), item);
+  });
+
+  const nextItems = [...deck.items];
+
+  newWords.forEach((nw) => {
+    const key = nw.word.toLowerCase().trim();
+    if (!key) return;
+
+    if (existingWordMap.has(key)) {
+      if (!skipDuplicates) {
+        // 기존 단어의 뜻이나 예문 보강
+        const existing = existingWordMap.get(key)!;
+        existing.korean_definition = nw.korean_definition || existing.korean_definition;
+        existing.part_of_speech = nw.part_of_speech || existing.part_of_speech;
+        if (nw.phonetic_symbol) existing.phonetic_symbol = nw.phonetic_symbol;
+        if (nw.example_sentence) existing.example_sentence = nw.example_sentence;
+        if (nw.synonyms && nw.synonyms.length > 0) existing.synonyms = nw.synonyms;
+        if (nw.antonyms && nw.antonyms.length > 0) existing.antonyms = nw.antonyms;
+        if (nw.collocations && nw.collocations.length > 0) existing.collocations = nw.collocations;
+        updatedCount++;
+      }
+    } else {
+      const newItem: VocabItem = {
+        ...nw,
+        id: `item-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        deck_id: deckId,
+        order_index: nextItems.length,
+        synonyms: nw.synonyms || [],
+        antonyms: nw.antonyms || [],
+        collocations: nw.collocations || [],
+        example_sentence: nw.example_sentence || "",
+      };
+      nextItems.push(newItem);
+      existingWordMap.set(key, newItem);
+      addedCount++;
+    }
+  });
+
+  deck.items = nextItems;
+  deck.items_count = nextItems.length;
+
+  saveLocalDecks(decks);
+  return { deck, addedCount, updatedCount };
+}
+
+/**
+ * 특정 단어 수정
+ */
+export function updateWordInLocalDeck(
+  deckId: string,
+  wordId: string,
+  updates: Partial<VocabItem>
+): DeckWithItems | null {
+  const decks = getLocalDecks();
+  const deck = decks.find((d) => d.id === deckId);
+  if (!deck) return null;
+
+  const wordIndex = deck.items.findIndex((w) => w.id === wordId);
+  if (wordIndex === -1) return null;
+
+  deck.items[wordIndex] = {
+    ...deck.items[wordIndex],
+    ...updates,
+  };
+
+  saveLocalDecks(decks);
+  return deck;
+}
+
+/**
+ * 특정 단어 삭제
+ */
+export function deleteWordFromLocalDeck(
+  deckId: string,
+  wordId: string
+): DeckWithItems | null {
+  const decks = getLocalDecks();
+  const deck = decks.find((d) => d.id === deckId);
+  if (!deck) return null;
+
+  deck.items = deck.items.filter((w) => w.id !== wordId);
+  deck.items_count = deck.items.length;
+
+  saveLocalDecks(decks);
+  return deck;
 }
 
 export function deleteLocalDeck(deckId: string): void {

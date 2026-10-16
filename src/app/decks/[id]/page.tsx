@@ -19,11 +19,16 @@ import {
   EyeOff,
   Zap,
   Crosshair,
+  Edit3,
+  FileJson,
+  Plus,
 } from "lucide-react";
 import { getDeckWordsWithProgress, getLocalDeckById } from "@/lib/storage";
 import { DeckWithItems, WordWithProgress } from "@/types/vocab";
 import { speakWord } from "@/lib/audio";
 import { getEnglishPartOfSpeech } from "@/lib/vocab-utils";
+import DeckEditModal from "@/components/study/DeckEditModal";
+import AddWordsJsonModal from "@/components/study/AddWordsJsonModal";
 
 export default function DeckDetailPage() {
   const params = useParams();
@@ -34,15 +39,32 @@ export default function DeckDetailPage() {
   const [wordsWithProgress, setWordsWithProgress] = useState<WordWithProgress[]>([]);
   const [playingWord, setPlayingWord] = useState<string | null>(null);
   const [isBlindMode, setIsBlindMode] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddJsonModalOpen, setIsAddJsonModalOpen] = useState(false);
 
-  useEffect(() => {
+  const refreshDeckData = () => {
     if (!deckId) return;
     const foundDeck = getLocalDeckById(deckId);
     if (foundDeck) {
       setDeck(foundDeck);
       setWordsWithProgress(getDeckWordsWithProgress(deckId));
     }
+  };
+
+  useEffect(() => {
+    refreshDeckData();
+    window.addEventListener("focus", refreshDeckData);
+    window.addEventListener("aivoca_decks_updated", refreshDeckData);
+    return () => {
+      window.removeEventListener("focus", refreshDeckData);
+      window.removeEventListener("aivoca_decks_updated", refreshDeckData);
+    };
   }, [deckId]);
+
+  const handleDeckUpdated = (updatedDeck: DeckWithItems) => {
+    setDeck(updatedDeck);
+    setWordsWithProgress(getDeckWordsWithProgress(updatedDeck.id));
+  };
 
   const handleSpeak = (word: string) => {
     setPlayingWord(word);
@@ -73,22 +95,43 @@ export default function DeckDetailPage() {
   return (
     <div className="space-y-6">
       {/* 상단 네비게이션 헤더 */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <button
           type="button"
           onClick={() => router.push("/")}
           className="p-2 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 active:scale-95"
+          title="홈으로 돌아가기"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
 
-        <Link
-          href={`/study/${deck.id}`}
-          className="btn-touch min-h-[46px] bg-brand-500 hover:bg-brand-600 text-white rounded-2xl font-black text-sm sm:text-base shadow-playful-brand"
-        >
-          <Play className="w-4 h-4 fill-white" />
-          <span>단어 훈련 시작</span>
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setIsAddJsonModalOpen(true)}
+            className="btn-touch min-h-[44px] px-3.5 bg-brand-50 hover:bg-brand-100 text-brand-700 border-2 border-brand-200 rounded-2xl font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-sm"
+          >
+            <FileJson className="w-4 h-4 text-brand-600" />
+            <span>JSON 단어 추가</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsEditModalOpen(true)}
+            className="btn-touch min-h-[44px] px-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-2xl font-bold text-xs sm:text-sm flex items-center gap-1.5"
+          >
+            <Edit3 className="w-4 h-4 text-slate-500" />
+            <span>편집</span>
+          </button>
+
+          <Link
+            href={`/study/${deck.id}`}
+            className="btn-touch min-h-[44px] px-4 bg-brand-500 hover:bg-brand-600 text-white rounded-2xl font-black text-xs sm:text-sm shadow-playful-brand flex items-center gap-1.5"
+          >
+            <Play className="w-4 h-4 fill-white" />
+            <span>훈련 시작</span>
+          </Link>
+        </div>
       </div>
 
       {/* 교재 및 단어장 정보 카드 (확장된 메타데이터 표시) */}
@@ -268,27 +311,47 @@ export default function DeckDetailPage() {
 
       {/* 단어 목록 (발음기호, 연어, 어원 등 유연한 렌더링) */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between px-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 px-1">
           <h3 className="font-black text-lg text-slate-800">
             수록 단어 목록 ({wordsWithProgress.length})
           </h3>
 
-          <button
-            type="button"
-            onClick={() => setIsBlindMode(!isBlindMode)}
-            className={`btn-touch text-xs font-black px-3 py-1.5 rounded-xl border transition-all flex items-center gap-1.5 ${
-              isBlindMode
-                ? "bg-amber-100 border-amber-300 text-amber-900 shadow-sm"
-                : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
-            }`}
-          >
-            {isBlindMode ? (
-              <EyeOff className="w-3.5 h-3.5 text-amber-700" />
-            ) : (
-              <Eye className="w-3.5 h-3.5" />
-            )}
-            <span>{isBlindMode ? "암기 테스트 모드 (뜻/어휘 가림)" : "암기 테스트 모드 켜기"}</span>
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsAddJsonModalOpen(true)}
+              className="btn-touch text-xs font-black px-3 py-1.5 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 transition-all flex items-center gap-1.5 shadow-sm"
+            >
+              <FileJson className="w-3.5 h-3.5 text-brand-600" />
+              <span>JSON으로 단어 추가</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsEditModalOpen(true)}
+              className="btn-touch text-xs font-black px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-all flex items-center gap-1.5"
+            >
+              <Edit3 className="w-3.5 h-3.5 text-slate-500" />
+              <span>편집</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsBlindMode(!isBlindMode)}
+              className={`btn-touch text-xs font-black px-3 py-1.5 rounded-xl border transition-all flex items-center gap-1.5 ${
+                isBlindMode
+                  ? "bg-amber-100 border-amber-300 text-amber-900 shadow-sm"
+                  : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              {isBlindMode ? (
+                <EyeOff className="w-3.5 h-3.5 text-amber-700" />
+              ) : (
+                <Eye className="w-3.5 h-3.5" />
+              )}
+              <span>{isBlindMode ? "뜻 보이기" : "가림판"}</span>
+            </button>
+          </div>
         </div>
 
         {wordsWithProgress.map((item, idx) => {
@@ -473,6 +536,26 @@ export default function DeckDetailPage() {
           );
         })}
       </div>
+
+      {/* 단어장 정보 & 단어 편집 모달 */}
+      {isEditModalOpen && (
+        <DeckEditModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          deck={deck}
+          onSuccess={handleDeckUpdated}
+        />
+      )}
+
+      {/* JSON으로 단어 추가 모달 */}
+      {isAddJsonModalOpen && (
+        <AddWordsJsonModal
+          isOpen={isAddJsonModalOpen}
+          onClose={() => setIsAddJsonModalOpen(false)}
+          deck={deck}
+          onSuccess={handleDeckUpdated}
+        />
+      )}
     </div>
   );
 }

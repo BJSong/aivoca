@@ -21,6 +21,10 @@ import {
   getDailyReviewLimit,
   setDailyReviewLimit,
   getAllDueReviewWords,
+  updateLocalDeck,
+  addWordsToLocalDeck,
+  updateWordInLocalDeck,
+  deleteWordFromLocalDeck,
 } from "../src/lib/storage";
 import { getLevenshteinDistance, analyzeTypo } from "../src/lib/levenshtein";
 import { getEnglishPartOfSpeech, generateVocabQuiz } from "../src/lib/vocab-utils";
@@ -582,6 +586,106 @@ async function runAllTests() {
     soundSafe = false;
   }
   assert(soundSafe, "playComboSound(콤보음) SSR 환경 안전 통과");
+
+  // -------------------------------------------------------------
+  // 12. 기존 단어장 편집 및 JSON 단어 추가/병합 기능
+  // -------------------------------------------------------------
+  group("12. 단어장 편집(Edit) 및 단어 추가/수정/삭제 (Patch)");
+
+  // 1) 테스트용 단어장 생성
+  const editTestDeck = createLocalDeck("테스트 편집 단어장", [
+    {
+      word: "initial",
+      part_of_speech: "adjective",
+      korean_definition: "처음의, 초기의",
+      synonyms: [],
+      antonyms: [],
+      collocations: [],
+      example_sentence: "This is the initial word.",
+    },
+  ]);
+  assert(editTestDeck.items.length === 1, "초기 단어 1개 확인");
+
+  // 2) 단어장 메타데이터 수정 (updateLocalDeck)
+  const updatedMetaDeck = updateLocalDeck(editTestDeck.id, {
+    title: "수정된 테스트 단어장",
+    publisher: "능률 10주차",
+    target_grade: "초등 6학년",
+  });
+  assert(updatedMetaDeck !== null, "updateLocalDeck 정상 실행");
+  assert(updatedMetaDeck?.title === "수정된 테스트 단어장", "단어장 제목 수정 확인");
+  assert(updatedMetaDeck?.publisher === "능률 10주차", "출판사/주차 수정 확인");
+
+  // 3) 기존 단어장에 복수 단어 일괄 추가 (addWordsToLocalDeck)
+  const addResult = addWordsToLocalDeck(editTestDeck.id, [
+    {
+      word: "secondary",
+      part_of_speech: "adjective",
+      korean_definition: "이차적인",
+      synonyms: [],
+      antonyms: [],
+      collocations: [],
+      example_sentence: "Secondary plan.",
+    },
+    {
+      word: "tertiary",
+      part_of_speech: "adjective",
+      korean_definition: "세 번째의",
+      synonyms: [],
+      antonyms: [],
+      collocations: [],
+      example_sentence: "Tertiary stage.",
+    },
+  ]);
+  assert(addResult !== null, "addWordsToLocalDeck 정상 실행");
+  assert(addResult?.addedCount === 2, "신규 단어 2개 추가 확인");
+  assert(addResult?.deck.items_count === 3, "단어장 items_count = 3 갱신 확인");
+
+  // 4) 중복 단어 추가 시 건너뛰기 테스트
+  const dupResult = addWordsToLocalDeck(
+    editTestDeck.id,
+    [
+      {
+        word: "SECONDARY", // 대소문자 무관 중복 감지
+        part_of_speech: "adjective",
+        korean_definition: "새로운 뜻",
+        synonyms: [],
+        antonyms: [],
+        collocations: [],
+        example_sentence: "Duplicate test.",
+      },
+    ],
+    true // skipDuplicates
+  );
+  assert(dupResult?.addedCount === 0, "중복 단어 건너뛰기(addedCount = 0) 확인");
+  assert(dupResult?.deck.items_count === 3, "중복 건너뛰기 시 단어 수 유지 (3개)");
+
+  // 5) 특정 단어 수정 (updateWordInLocalDeck)
+  const wordToUpdate = addResult?.deck.items[0];
+  assert(!!wordToUpdate, "수정 대상 단어 존재 확인");
+  if (wordToUpdate) {
+    const updatedWordDeck = updateWordInLocalDeck(editTestDeck.id, wordToUpdate.id, {
+      korean_definition: "변경된 한국어 뜻",
+      phonetic_symbol: "/ˈtɛst/",
+    });
+    const foundWord = updatedWordDeck?.items.find((w) => w.id === wordToUpdate.id);
+    assert(foundWord?.korean_definition === "변경된 한국어 뜻", "단어 뜻 수정 반영 확인");
+    assert(foundWord?.phonetic_symbol === "/ˈtɛst/", "단어 발음기호 수정 반영 확인");
+  }
+
+  // 6) 특정 단어 삭제 (deleteWordFromLocalDeck)
+  if (wordToUpdate) {
+    const deletedWordDeck = deleteWordFromLocalDeck(editTestDeck.id, wordToUpdate.id);
+    assert(deletedWordDeck?.items.length === 2, "단어 1개 삭제 후 2개 남음 확인");
+    assert(
+      !deletedWordDeck?.items.some((w) => w.id === wordToUpdate.id),
+      "삭제된 단어가 목록에서 제거됨"
+    );
+  }
+
+  // 정리: 테스트 단어장 삭제
+  deleteLocalDeck(editTestDeck.id);
+  assert(getLocalDeckById(editTestDeck.id) === null, "테스트 단어장 정리 삭제 확인");
 
   // ==================== Summary ====================
   console.log("\n==================================================");

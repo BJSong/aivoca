@@ -42,6 +42,13 @@ export default function HomePage() {
   useEffect(() => {
     setMounted(true);
     loadData();
+
+    window.addEventListener("focus", loadData);
+    window.addEventListener("aivoca_decks_updated", loadData);
+    return () => {
+      window.removeEventListener("focus", loadData);
+      window.removeEventListener("aivoca_decks_updated", loadData);
+    };
   }, []);
 
   const handleDeleteDeck = (deckId: string, title: string) => {
