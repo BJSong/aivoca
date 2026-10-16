@@ -151,10 +151,104 @@ export function playFanfareSound() {
   });
 }
 
-/** Web Speech API를 통한 영어 단어 음성 합성 발음 */
+/**
+ * 로컬 보이스 품질 점수 산출 함수 (Score Voice)
+ * Natural / Enhanced / Neural 등 고품질 로컬 신경망 보이스에 높은 가중치 부여
+ */
+export function scoreVoice(voice: { name: string; lang: string }): number {
+  const lang = voice.lang.toLowerCase();
+  if (!lang.startsWith("en")) return -1;
+
+  let score = 10;
+  const name = voice.name.toLowerCase();
+
+  // 1. 방언 선호도 (미국 영어 최우선 > 영국 영어 > 기타 영어)
+  if (lang === "en-us" || lang.startsWith("en_us")) score += 15;
+  else if (lang === "en-gb" || lang.startsWith("en_gb")) score += 8;
+  else score += 4;
+
+  // 2. 최신 고음질 신경망(Natural / Neural) 키워드 가중치
+  if (name.includes("natural")) score += 35; // Edge Microsoft Natural 음성 등
+  if (name.includes("online")) score += 20; // Edge Online Natural 음성
+  if (name.includes("neural")) score += 30; // Neural 모델
+  if (name.includes("enhanced") || name.includes("premium")) score += 30; // Apple Samantha Enhanced, Premium 등
+
+  // 3. 검증된 원어민 품질 보이스명 가중치
+  if (name.includes("google us english") || name.includes("google uk english")) score += 25;
+  if (name.includes("siri")) score += 25;
+  if (name.includes("samantha") || name.includes("ava") || name.includes("allison")) score += 20;
+  if (name.includes("jenny") || name.includes("guy") || name.includes("aria")) score += 22;
+
+  // 4. 구형/기계음 합성 엔진 감점
+  if (name.includes("espeak") || name.includes("compact")) score -= 20;
+
+  return score;
+}
+
+let cachedBestVoice: SpeechSynthesisVoice | null = null;
+
+/**
+ * 시스템에 설치된 가장 음질이 뛰어난 영어 보이스를 탐색 및 반환
+ */
+export function getBestEnglishVoice(): SpeechSynthesisVoice | null {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return null;
+  if (cachedBestVoice) return cachedBestVoice;
+
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices || voices.length === 0) return null;
+
+  let highestScore = -1;
+  let best: SpeechSynthesisVoice | null = null;
+
+  for (const voice of voices) {
+    const s = scoreVoice(voice);
+    if (s > highestScore) {
+      highestScore = s;
+      best = voice;
+    }
+  }
+
+  // 가중치 탐색 실패 시 기본 en 보이스 매핑
+  if (!best) {
+    best = voices.find((v) => v.lang.toLowerCase().startsWith("en")) || null;
+  }
+
+  if (best) {
+    cachedBestVoice = best;
+  }
+  return best;
+}
+
+// 브라우저 보이스 비동기 로딩 이벤트 리스너 등록
+if (typeof window !== "undefined" && "speechSynthesis" in window) {
+  const handleVoicesChanged = () => {
+    cachedBestVoice = null;
+    getBestEnglishVoice();
+  };
+
+  if (window.speechSynthesis.getVoices().length > 0) {
+    handleVoicesChanged();
+  }
+
+  window.speechSynthesis.onvoiceschanged = handleVoicesChanged;
+}
+
+/** 텍스트 정제 (마크다운 기호 및 특수문자 발화 방지) */
+export function sanitizeSpeechText(text: string): string {
+  return text
+    .replace(/\[\s*_{2,}\s*\]/g, " blank ") // [ _____ ] 빈칸 표현을 'blank'로 선처리
+    .replace(/_{2,}/g, " blank ") // 연속 언더스코어 빈칸 처리
+    .replace(/[*~`#[\]]/g, "") // 마크다운 서식 기호 제거
+    .replace(/[“”"]/g, "") // 큰따옴표 제거
+    .replace(/\s+([!?,.:;])/g, "$1") // 문장 부호 앞 공백 제거
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Web Speech API를 통한 영어 단어 음성 합성 발음 (최적화 버전) */
 export function speakWord(
   text: string,
-  rate: number = 1.0,
+  rate: number = 0.95,
   onEnd?: () => void
 ) {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) {
@@ -162,37 +256,40 @@ export function speakWord(
     return;
   }
 
+  const cleanText = sanitizeSpeechText(text);
+  if (!cleanText) {
+    onEnd?.();
+    return;
+  }
+
+  // 크롬 백그라운드 정지 현상 방지
+  if (window.speechSynthesis.paused) {
+    window.speechSynthesis.resume();
+  }
   window.speechSynthesis.cancel(); // 이전 재생 중단
 
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-US";
-  utterance.rate = rate; // 1.0 = 보통, 0.8 = 느린 달팽이 속도
-  utterance.pitch = 1.05; // 초등학생에게 친근한 약간 밝은 톤
+  const utterance = new SpeechSynthesisUtterance(cleanText);
+  utterance.rate = rate; // 0.95 = 자연스럽고 또렷한 기본 속도
+  utterance.pitch = 1.0; // 안정적인 기본 원어민 톤
 
-  // 사용 가능한 영어 보이스 탐색
-  const voices = window.speechSynthesis.getVoices();
-  const englishVoice = voices.find(
-    (v) =>
-      v.lang.startsWith("en") &&
-      (v.name.includes("Google") ||
-        v.name.includes("Samantha") ||
-        v.name.includes("Natural"))
-  ) || voices.find((v) => v.lang.startsWith("en"));
-
-  if (englishVoice) {
-    utterance.voice = englishVoice;
+  const bestVoice = getBestEnglishVoice();
+  if (bestVoice) {
+    utterance.voice = bestVoice;
+    utterance.lang = bestVoice.lang;
+  } else {
+    utterance.lang = "en-US";
   }
 
   if (onEnd) {
-    utterance.onend = onEnd;
-    utterance.onerror = onEnd;
+    utterance.onend = () => onEnd();
+    utterance.onerror = () => onEnd();
   }
 
   window.speechSynthesis.speak(utterance);
 }
 
-/** 1단계용: 발음 2회 연속 재생 (500ms 간격) */
-export function speakTwice(text: string, rate: number = 1.0) {
+/** 1단계용: 발음 2회 연속 재생 (450ms 간격) */
+export function speakTwice(text: string, rate: number = 0.95) {
   speakWord(text, rate, () => {
     setTimeout(() => {
       speakWord(text, rate);
@@ -203,7 +300,7 @@ export function speakTwice(text: string, rate: number = 1.0) {
 /** 예문 전체 음성 재생 (Sentence TTS) */
 export function speakSentence(
   text: string,
-  rate: number = 0.95,
+  rate: number = 0.92,
   onEnd?: () => void
 ) {
   speakWord(text, rate, onEnd);

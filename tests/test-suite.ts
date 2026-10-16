@@ -37,6 +37,8 @@ import {
   playComboSound,
   speakWord,
   speakSentence,
+  scoreVoice,
+  sanitizeSpeechText,
 } from "../src/lib/audio";
 import { generateSpellingTrap } from "../src/lib/spelling-traps";
 import { POST as ocrHandler } from "../src/app/api/ocr/parse-deck/route";
@@ -335,6 +337,26 @@ async function runAllTests() {
     console.error(err);
   }
   assert(!audioException, "브라우저 API 부재(SSR 환경) 시 단어/예문 오디오 함수들이 예외 없이 안전하게 통과");
+
+  // Web Speech API Natural Voice 품질 가중치(Score) 검증
+  const naturalScore = scoreVoice({ name: "Microsoft Jenny Online (Natural) - English (United States)", lang: "en-US" });
+  const googleScore = scoreVoice({ name: "Google US English", lang: "en-US" });
+  const samanthaEnhancedScore = scoreVoice({ name: "Samantha (Enhanced)", lang: "en-US" });
+  const genericScore = scoreVoice({ name: "Alex", lang: "en-US" });
+  const espeakScore = scoreVoice({ name: "eSpeak-NG", lang: "en-US" });
+  const nonEnglishScore = scoreVoice({ name: "Yuna", lang: "ko-KR" });
+
+  assert(naturalScore > genericScore, "Natural 고음질 보이스가 일반 보이스보다 높은 점수 부여");
+  assert(samanthaEnhancedScore > genericScore, "Enhanced/Premium 보이스가 일반 보이스보다 높은 점수 부여");
+  assert(googleScore > espeakScore, "검증된 원어민 보이스가 eSpeak 기계음보다 높은 점수 부여");
+  assert(genericScore > espeakScore, "일반 보이스가 기계음(eSpeak)보다 감점 방어");
+  assert(nonEnglishScore === -1, "영어 이외의 언어 보이스는 제외(-1)");
+
+  // 텍스트 정제(Sanitization) 검증
+  const sanitized1 = sanitizeSpeechText("Look at **monument** & [ _____ ]!");
+  assert(sanitized1 === "Look at monument & blank!", "특수문자 및 빈칸 [ _____ ]이 자연스러운 blank로 정제됨");
+  const sanitized2 = sanitizeSpeechText("“She said, ‘Hello world’!”");
+  assert(!sanitized2.includes("“") && !sanitized2.includes("”"), "특수 따옴표 기호가 정상 제거됨");
 
   // -------------------------------------------------------------
   // 6. Vision AI OCR API Route Handler
