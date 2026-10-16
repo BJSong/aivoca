@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { BookOpen, CheckCircle, Sparkles, HelpCircle } from "lucide-react";
+import { BookOpen, CheckCircle, Sparkles, HelpCircle, Volume2 } from "lucide-react";
 import { VocabItem } from "@/types/vocab";
-import { playCorrectSound, playIncorrectSound } from "@/lib/audio";
+import { playCorrectSound, playIncorrectSound, speakSentence } from "@/lib/audio";
 
 interface StoryBlankGameProps {
   wordItem: VocabItem;
@@ -76,7 +76,20 @@ export default function StoryBlankGame({
       </div>
 
       {/* 스토리 문장 카드 */}
-      <div className="bg-slate-50 border-2 border-slate-200 rounded-3xl p-6 mb-6 shadow-inner text-center">
+      <div className="bg-slate-50 border-2 border-slate-200 rounded-3xl p-6 mb-6 shadow-inner text-center relative">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-xs font-bold text-slate-400">문장 속 빈칸 채우기</span>
+          <button
+            type="button"
+            onClick={() => speakSentence(sentence)}
+            className="btn-touch px-3 py-1 bg-white hover:bg-indigo-50 text-brand-700 border border-slate-200 rounded-xl text-xs font-bold flex items-center gap-1 shadow-sm"
+            title="문장 전체 음성 듣기"
+          >
+            <Volume2 className="w-3.5 h-3.5 text-brand-600" />
+            <span>문장 듣기</span>
+          </button>
+        </div>
+
         <p className="text-xl sm:text-2xl font-black text-slate-800 leading-relaxed">
           &ldquo;{sentenceWithBlank}&rdquo;
         </p>

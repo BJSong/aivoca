@@ -11,10 +11,12 @@ import {
   Settings,
   CheckCircle2,
   AlertTriangle,
+  Volume2,
 } from "lucide-react";
 import { DeckWithItems, VocabItem, PartOfSpeech } from "@/types/vocab";
 import { updateLocalDeck } from "@/lib/storage";
 import { getEnglishPartOfSpeech } from "@/lib/vocab-utils";
+import { speakSentence } from "@/lib/audio";
 
 interface DeckEditModalProps {
   isOpen: boolean;
@@ -379,19 +381,31 @@ export default function DeckEditModal({
                         placeholder="발음기호 (선택)"
                         className="px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 outline-none"
                       />
-                      <input
-                        type="text"
-                        value={item.example_sentence || ""}
-                        onChange={(e) =>
-                          handleUpdateWordField(
-                            idx,
-                            "example_sentence",
-                            e.target.value
-                          )
-                        }
-                        placeholder="예문 (선택)"
-                        className="px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 outline-none"
-                      />
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="text"
+                          value={item.example_sentence || ""}
+                          onChange={(e) =>
+                            handleUpdateWordField(
+                              idx,
+                              "example_sentence",
+                              e.target.value
+                            )
+                          }
+                          placeholder="예문 (선택)"
+                          className="flex-1 px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 outline-none"
+                        />
+                        {item.example_sentence && (
+                          <button
+                            type="button"
+                            onClick={() => speakSentence(item.example_sentence || "")}
+                            title="예문 미리듣기"
+                            className="p-1 rounded bg-slate-100 hover:bg-indigo-50 text-slate-500 hover:text-indigo-600 transition-colors"
+                          >
+                            <Volume2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );

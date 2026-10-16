@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { getDeckWordsWithProgress, getLocalDeckById } from "@/lib/storage";
 import { DeckWithItems, WordWithProgress } from "@/types/vocab";
-import { speakWord } from "@/lib/audio";
+import { speakWord, speakSentence } from "@/lib/audio";
 import { getEnglishPartOfSpeech } from "@/lib/vocab-utils";
 import DeckEditModal from "@/components/study/DeckEditModal";
 import AddWordsJsonModal from "@/components/study/AddWordsJsonModal";
@@ -38,6 +38,7 @@ export default function DeckDetailPage() {
   const [deck, setDeck] = useState<DeckWithItems | null>(null);
   const [wordsWithProgress, setWordsWithProgress] = useState<WordWithProgress[]>([]);
   const [playingWord, setPlayingWord] = useState<string | null>(null);
+  const [playingSentence, setPlayingSentence] = useState<string | null>(null);
   const [isBlindMode, setIsBlindMode] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddJsonModalOpen, setIsAddJsonModalOpen] = useState(false);
@@ -70,6 +71,13 @@ export default function DeckDetailPage() {
     setPlayingWord(word);
     speakWord(word, 1.0, () => {
       setPlayingWord(null);
+    });
+  };
+
+  const handleSpeakSentence = (sentence: string) => {
+    setPlayingSentence(sentence);
+    speakSentence(sentence, 0.95, () => {
+      setPlayingSentence(null);
     });
   };
 
@@ -494,9 +502,26 @@ export default function DeckDetailPage() {
                 (item.extra_metadata && Object.keys(item.extra_metadata).length > 0)) && (
                 <div className="mt-2 pt-3 border-t border-slate-100 space-y-2 text-xs">
                   {item.example_sentence && (
-                    <div className="bg-slate-50 p-2.5 rounded-xl text-slate-700">
-                      <span className="font-bold text-brand-600">예문: </span>
-                      <span>{item.example_sentence}</span>
+                    <div className="bg-slate-50 p-2.5 rounded-xl text-slate-700 flex items-start justify-between gap-2 border border-slate-100">
+                      <div className="flex-1 min-w-0">
+                        <span className="font-bold text-brand-600">예문: </span>
+                        <span>{item.example_sentence}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleSpeakSentence(item.example_sentence)}
+                        className={`btn-touch shrink-0 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
+                          playingSentence === item.example_sentence
+                            ? "bg-brand-500 text-white shadow-sm"
+                            : "bg-white hover:bg-brand-50 text-slate-500 hover:text-brand-600 border border-slate-200 shadow-sm"
+                        }`}
+                        title="예문 음성 듣기"
+                      >
+                        <Volume2 className="w-3.5 h-3.5" />
+                        <span className="text-[10px]">
+                          {playingSentence === item.example_sentence ? "재생 중" : "예문 듣기"}
+                        </span>
+                      </button>
                     </div>
                   )}
 

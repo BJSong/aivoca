@@ -739,9 +739,22 @@ export default function ThreeStepRecall({
 
               {wordItem.example_sentence && (
                 <div className="bg-indigo-50 border border-indigo-200 p-4 rounded-2xl text-left">
-                  <div className="flex items-center gap-1.5 text-xs font-black text-brand-700 mb-1">
-                    <BookOpen className="w-3.5 h-3.5" />
-                    <span>문맥 속에 기억하기:</span>
+                  <div className="flex items-center justify-between gap-1.5 text-xs font-black text-brand-700 mb-1">
+                    <div className="flex items-center gap-1.5">
+                      <BookOpen className="w-3.5 h-3.5" />
+                      <span>문맥 속에 기억하기:</span>
+                    </div>
+                    {!isSilentMode && (
+                      <button
+                        type="button"
+                        onClick={() => speakSentence(wordItem.example_sentence)}
+                        className="btn-touch px-2 py-0.5 bg-white hover:bg-indigo-100 text-brand-700 border border-indigo-200 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm"
+                        title="예문 전체 듣기"
+                      >
+                        <Volume2 className="w-3.5 h-3.5" />
+                        <span>예문 듣기</span>
+                      </button>
+                    )}
                   </div>
                   <p className="text-sm sm:text-base font-bold text-slate-800">
                     &ldquo;{wordItem.example_sentence}&rdquo;
