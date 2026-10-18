@@ -7,6 +7,7 @@ import {
   SAMPLE_TED_DECK,
   WEEK8_TEXTBOOK_DECK,
   WEEK9_TEXTBOOK_DECK,
+  WEEK10_TEXTBOOK_DECK,
   TEXTBOOK_TED_DECK,
   TEXTBOOK_NOVEL_DECK,
   INITIAL_DEFAULT_DECKS,
@@ -199,6 +200,18 @@ async function runAllTests() {
   );
   assert(allW9PosValid, "9주차 교재 단어 16종 모두 영어 품사 지정 확인");
 
+  // 10주차 통합 단어장 검증 (TEDTALKS, NOVEL, SPEECH 총 20단어)
+  assert(WEEK10_TEXTBOOK_DECK.items.length === 20, "10주차 통합 단어장 단어 수 20개 확인");
+  assert(WEEK10_TEXTBOOK_DECK.title === "WEEK 10 | VOCABULARY", "10주차 단어장 타이틀 확인");
+  assert(
+    INITIAL_DEFAULT_DECKS.some((d) => d.id === "deck-week10"),
+    "기본 단어장 목록에 10주차 단어장 포함 확인"
+  );
+  const allW10PosValid = WEEK10_TEXTBOOK_DECK.items.every((item) =>
+    validEnglishPos.includes(item.part_of_speech.toLowerCase())
+  );
+  assert(allW10PosValid, "10주차 교재 단어 20종 모두 영어 품사 지정 확인");
+
   const loadedDefaultDecks = getLocalDecks();
   assert(
     loadedDefaultDecks.some((d) => d.id === "deck-week8"),
@@ -207,6 +220,10 @@ async function runAllTests() {
   assert(
     loadedDefaultDecks.some((d) => d.id === "deck-week9"),
     "getLocalDecks()에서 9주차 단어장(deck-week9) 로드 확인"
+  );
+  assert(
+    loadedDefaultDecks.some((d) => d.id === "deck-week10"),
+    "getLocalDecks()에서 10주차 단어장(deck-week10) 로드 확인"
   );
   assert(
     TEXTBOOK_TED_DECK.items.length === 8 && TEXTBOOK_NOVEL_DECK.items.length === 8,
@@ -530,6 +547,25 @@ async function runAllTests() {
   assert(arrOnly.words.length === 1, "배열만 단독 입력 시 파싱");
   assert(arrOnly.words[0].part_of_speech === "adjective", "한국어 품사(형용사) → 영어 adjective 정규화");
   assert(arrOnly.words[0].korean_definition === "용감한", "meaning 필드를 korean_definition으로 매핑");
+
+  // 마크다운 역슬래시 이스케이프(\~, \_, \*) 및 후행 쉼표(trailing comma) 자동 복구 검증
+  const markdownEscapedJson = `
+    {
+      "deck_title": "WEEK 10 | VOCABULARY",
+      "target_grade": "초등 5\\~6학년",
+      "words": [
+        {
+          "word": "disappear",
+          "part_of_speech": "verb",
+          "korean_definition": "사라지다\\_숨다",
+          "synonyms": ["vanish\\*"],
+        },
+      ],
+    }
+  `;
+  const escapeParsed = parseGeminiDeckJson(markdownEscapedJson);
+  assert(escapeParsed.words.length === 1, "마크다운 역슬래시 이스케이프(\~, \_, \*) 및 후행 쉼표 자동 복구 파싱 성공");
+  assert(escapeParsed.target_grade === "초등 5~6학년", "비표준 \\~ 이스케이프가 정상적인 ~로 복원됨");
 
   let invalidThrown = false;
   try {

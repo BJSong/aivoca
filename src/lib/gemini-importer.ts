@@ -94,7 +94,13 @@ export function parseGeminiDeckJson(rawInput: string): OCRParseResult {
     }
   }
 
-  // 3. 파싱 시도
+  // 3. 제미나이/마크다운 렌더러 특유의 비표준 역슬래시 이스케이프(\~, \_, \*, \-, \. 등) 및 후행 쉼표 자동 복구/정제
+  // 표준 JSON 이스케이프(", \, /, b, f, n, r, t, u)가 아닌 모든 \X 를 X 로 치환
+  jsonStr = jsonStr.replace(/\\([^"\\\/bfnrtu])/g, "$1");
+  // 배열이나 객체 마지막 요소 뒤의 후행 쉼표(trailing comma) 제거
+  jsonStr = jsonStr.replace(/,\s*([}\]])/g, "$1");
+
+  // 4. 파싱 시도
   let parsed: unknown;
   try {
     parsed = JSON.parse(jsonStr);
