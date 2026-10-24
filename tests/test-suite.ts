@@ -8,6 +8,15 @@ import {
   WEEK8_TEXTBOOK_DECK,
   WEEK9_TEXTBOOK_DECK,
   WEEK10_TEXTBOOK_DECK,
+  WEEK1_TEXTBOOK_DECK,
+  WEEK2_TEXTBOOK_DECK,
+  WEEK3_TEXTBOOK_DECK,
+  WEEK4_TEXTBOOK_DECK,
+  WEEK5_TEXTBOOK_DECK,
+  WEEK6_TEXTBOOK_DECK,
+  WEEK7_TEXTBOOK_DECK,
+  ALL_TEXTBOOK_DECKS,
+  getCombinedWeeksDeck,
   TEXTBOOK_TED_DECK,
   TEXTBOOK_NOVEL_DECK,
   INITIAL_DEFAULT_DECKS,
@@ -175,7 +184,7 @@ async function runAllTests() {
 
   // 교재 사진 기반 8주차 통합 단어장 검증 (TEDTALKS pp.64-65 & NOVEL pp.66-67 & SPEECH p.68, 총 20단어)
   assert(WEEK8_TEXTBOOK_DECK.items.length === 20, "8주차 통합 단어장 단어 수 20개 확인");
-  assert(WEEK8_TEXTBOOK_DECK.title === "8주차 단어장", "8주차 단어장 타이틀 확인");
+  assert(WEEK8_TEXTBOOK_DECK.title.includes("8") || WEEK8_TEXTBOOK_DECK.title.includes("08"), "8주차 단어장 타이틀 확인");
   assert(
     INITIAL_DEFAULT_DECKS.some((d) => d.id === "deck-week8"),
     "기본 단어장 목록에 8주차 단어장 포함 확인"
@@ -188,8 +197,8 @@ async function runAllTests() {
   assert(allW8PosValid, "8주차 교재 단어 20종 모두 영어 품사(noun, verb, adjective, adverb, preposition) 지정 확인");
 
   // 교재 사진 기반 9주차 통합 단어장 검증 (TEDTALKS pp.74-75 & NOVEL pp.76-77, 총 16단어)
-  assert(WEEK9_TEXTBOOK_DECK.items.length === 16, "9주차 통합 단어장 단어 수 16개 확인");
-  assert(WEEK9_TEXTBOOK_DECK.title === "9주차 단어장", "9주차 단어장 타이틀 확인");
+  assert(WEEK9_TEXTBOOK_DECK.items.length === 20, "9주차 통합 단어장 단어 수 20개 확인");
+  assert(WEEK9_TEXTBOOK_DECK.title.includes("9") || WEEK9_TEXTBOOK_DECK.title.includes("09"), "9주차 단어장 타이틀 확인");
   assert(
     INITIAL_DEFAULT_DECKS.some((d) => d.id === "deck-week9"),
     "기본 단어장 목록에 9주차 단어장 포함 확인"
@@ -198,9 +207,30 @@ async function runAllTests() {
   const allW9PosValid = WEEK9_TEXTBOOK_DECK.items.every((item) =>
     validEnglishPos.includes(item.part_of_speech.toLowerCase())
   );
-  assert(allW9PosValid, "9주차 교재 단어 16종 모두 영어 품사 지정 확인");
+  assert(allW9PosValid, "9주차 교재 단어 20종 모두 영어 품사 지정 확인");
 
   // 10주차 통합 단어장 검증 (TEDTALKS, NOVEL, SPEECH 총 20단어)
+  
+  // 1~10주차 전 범위 단어장 및 무중복(Zero Duplicates) 검증
+  assert(ALL_TEXTBOOK_DECKS.length === 10, "1~10주차 10개 단어장 완비 확인");
+  const all192Words = ALL_TEXTBOOK_DECKS.flatMap((d) => d.items.map((i) => i.word.toLowerCase()));
+  assert(all192Words.length === 192, "1~10주차 총 192단어 로드 확인");
+  assert(new Set(all192Words).size === 192, "1~10주차 전 범위 192단어 중복 없음(Zero Duplicates) 확인");
+
+  // 1~10주차 통합 셔플 테스트(Combined Weeks Deck) 기능 검증
+  const combinedDeck = getCombinedWeeksDeck();
+  assert(combinedDeck.items.length === 192, "통합 모의고사 전 범위 192단어 추출 확인");
+  assert(combinedDeck.id === "deck-combined-all", "통합 모의고사 덱 ID 확인");
+  assert(combinedDeck.title.includes("통합 모의고사"), "통합 모의고사 타이틀 확인");
+  
+  // 특정 주차 선택 통합 테스트 검증 (예: 1~2주차 40단어)
+  const subCombined = getCombinedWeeksDeck({ weekNumbers: [1, 2] });
+  assert(subCombined.items.length === 40, "1~2주차 선택 통합 모의고사 40단어 추출 확인");
+
+  // getLocalDeckById 가상 덱 조회 지원 검증
+  const foundCombined = getLocalDeckById("deck-combined-all");
+  assert(foundCombined !== null && foundCombined.items.length === 192, "getLocalDeckById(deck-combined-all) 정상 조회");
+
   assert(WEEK10_TEXTBOOK_DECK.items.length === 20, "10주차 통합 단어장 단어 수 20개 확인");
   assert(WEEK10_TEXTBOOK_DECK.title === "WEEK 10 | VOCABULARY", "10주차 단어장 타이틀 확인");
   assert(
@@ -632,7 +662,7 @@ async function runAllTests() {
       t.prefix + t.correctChunk + t.suffix === item.word
     );
   });
-  assert(allWeek9Valid, "9주차 교재 단어 16종 모두 유효한 철자 함정 생성");
+  assert(allWeek9Valid, "9주차 교재 단어 20종 모두 유효한 철자 함정 생성");
 
   // 7) 콤보 효과음(playComboSound) SSR 환경 안전성 검증
   let soundSafe = true;

@@ -16,7 +16,10 @@ import {
   Building,
   GraduationCap,
   Target,
+  Shuffle,
+  Layers,
 } from "lucide-react";
+import CombinedTestModal from "@/components/study/CombinedTestModal";
 import DailyGoalModal from "@/components/common/DailyGoalModal";
 import {
   getLocalDecks,
@@ -32,6 +35,8 @@ export default function HomePage() {
   const [dueWords, setDueWords] = useState<WordWithProgress[]>([]);
   const [mounted, setMounted] = useState(false);
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
+  const [isCombinedModalOpen, setIsCombinedModalOpen] = useState(false);
+  const [deckFilter, setDeckFilter] = useState<"all" | "textbook" | "custom">("all");
 
   const loadData = () => {
     setProfile(getLocalProfile());
@@ -65,6 +70,13 @@ export default function HomePage() {
       </div>
     );
   }
+
+  const filteredDecks = decks.filter((deck) => {
+    const isTextbook = /^deck-week\d+$/.test(deck.id);
+    if (deckFilter === "textbook") return isTextbook;
+    if (deckFilter === "custom") return !isTextbook;
+    return true;
+  });
 
   const level = profile ? Math.floor(profile.total_xp / 100) + 1 : 1;
   const currentLevelXP = (profile?.total_xp ?? 0) % 100;
@@ -229,27 +241,113 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* 3.5. 🎯 1~10주차 통합 셔플 모의고사 배너 */}
+      <section className="card-chunky bg-gradient-to-r from-sunny-400 via-amber-300 to-sunny-400 border-4 border-amber-400 text-slate-900 shadow-playful-sunny overflow-hidden relative">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-slate-900 text-white flex items-center justify-center text-3xl shadow-md shrink-0">
+              🎯
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="bg-slate-900 text-white text-xs font-black px-2.5 py-0.5 rounded-full">
+                  전 범위 종합 점검
+                </span>
+                <span className="bg-white/80 text-amber-900 text-xs font-bold px-2.5 py-0.5 rounded-full">
+                  총 192단어 (중복 없음)
+                </span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black mt-1">
+                1~10주차 통합 셔플 모의고사
+              </h3>
+              <p className="text-sm font-bold text-slate-700 mt-0.5">
+                1~10주차 단어를 한꺼번에 섞어서 실전 테스트! 원하는 주차나 문항 수만 골라서 풀 수도 있어요.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full md:w-auto shrink-0">
+            <Link
+              href="/study/deck-combined-all?mode=three-step&limit=20&shuffle=true"
+              className="btn-touch flex-1 md:flex-initial min-h-[48px] bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-black text-sm sm:text-base shadow-md flex items-center justify-center gap-2"
+            >
+              <Shuffle className="w-4 h-4 text-sunny-400" />
+              <span>랜덤 20제 즉시 테스트</span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => setIsCombinedModalOpen(true)}
+              className="btn-touch flex-1 md:flex-initial min-h-[48px] bg-white hover:bg-amber-50 text-slate-800 border-2 border-slate-900/10 rounded-2xl font-black text-sm sm:text-base shadow-sm flex items-center justify-center gap-1.5"
+            >
+              <span>주차·문항 선택 ⚙️</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* 4. 내 단어장 세트 목록 */}
       <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2">
-            <BookOpen className="w-6 h-6 text-brand-500" />
-            <span>내 단어장 모음</span>
-            <span className="text-sm font-bold text-slate-400">
-              ({decks.length})
-            </span>
-          </h3>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <h3 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2">
+              <BookOpen className="w-6 h-6 text-brand-500" />
+              <span>내 단어장 모음</span>
+              <span className="text-sm font-bold text-slate-400">
+                ({filteredDecks.length})
+              </span>
+            </h3>
+          </div>
 
-          <Link
-            href="/decks/new"
-            className="text-sm font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1"
-          >
-            <Plus className="w-4 h-4" />
-            <span>새 단어장</span>
-          </Link>
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+            {/* 탭 필터 */}
+            <div className="flex bg-slate-100 p-1 rounded-xl text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => setDeckFilter("all")}
+                className={`px-3 py-1.5 rounded-lg transition-colors ${
+                  deckFilter === "all"
+                    ? "bg-white text-slate-900 shadow-sm font-black"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                전체
+              </button>
+              <button
+                type="button"
+                onClick={() => setDeckFilter("textbook")}
+                className={`px-3 py-1.5 rounded-lg transition-colors ${
+                  deckFilter === "textbook"
+                    ? "bg-brand-500 text-white shadow-sm font-black"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                교재 1~10주차
+              </button>
+              <button
+                type="button"
+                onClick={() => setDeckFilter("custom")}
+                className={`px-3 py-1.5 rounded-lg transition-colors ${
+                  deckFilter === "custom"
+                    ? "bg-white text-slate-900 shadow-sm font-black"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                내 단어장
+              </button>
+            </div>
+
+            <Link
+              href="/decks/new"
+              className="text-sm font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1 shrink-0"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">새 단어장</span>
+            </Link>
+          </div>
         </div>
 
-        {decks.length === 0 ? (
+        {filteredDecks.length === 0 ? (
           <div className="card-chunky text-center py-12 border-dashed border-2 border-slate-300">
             <p className="text-lg font-bold text-slate-500">
               아직 등록된 단어장이 없습니다.
@@ -264,7 +362,7 @@ export default function HomePage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {decks.map((deck) => {
+            {filteredDecks.map((deck) => {
               const mastered = deck.mastered_count ?? 0;
               const total = deck.items?.length || deck.items_count || 1;
               const percent = Math.round((mastered / total) * 100);
@@ -364,6 +462,12 @@ export default function HomePage() {
         isOpen={isGoalModalOpen}
         onClose={() => setIsGoalModalOpen(false)}
         onGoalUpdated={() => loadData()}
+      />
+
+      {/* 1~10주차 통합 셔플 모의고사 모달 */}
+      <CombinedTestModal
+        isOpen={isCombinedModalOpen}
+        onClose={() => setIsCombinedModalOpen(false)}
       />
     </div>
   );

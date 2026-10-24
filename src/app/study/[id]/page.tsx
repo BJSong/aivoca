@@ -43,9 +43,31 @@ function StudyContent() {
     if (!deckId) return;
     const found = getLocalDeckById(deckId);
     if (found && found.items.length > 0) {
-      setDeck(found);
+      let items = [...found.items];
+      const shouldShuffle = searchParams.get("shuffle") === "true" || deckId.includes("combined");
+      const limitParam = searchParams.get("limit");
+
+      if (shouldShuffle) {
+        for (let i = items.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [items[i], items[j]] = [items[j], items[i]];
+        }
+      }
+
+      if (limitParam) {
+        const lim = parseInt(limitParam, 10);
+        if (lim > 0 && lim < items.length) {
+          items = items.slice(0, lim);
+        }
+      }
+
+      setDeck({
+        ...found,
+        items,
+        items_count: items.length,
+      });
     }
-  }, [deckId]);
+  }, [deckId, searchParams]);
 
   const handleWordComplete = (success: boolean) => {
     if (!deck) return;
