@@ -314,6 +314,30 @@ export default function DeckDetailPage() {
             </div>
             <Crosshair className="w-4 h-4 text-slate-300 group-hover:text-rose-500 transition-colors" />
           </Link>
+
+          {/* 5. 카드 짝맞추기 */}
+          <Link
+            href={`/study/${deck.id}?mode=matching`}
+            className="btn-touch p-4 bg-white hover:bg-indigo-50/50 border-2 border-slate-200 hover:border-indigo-400 rounded-2xl shadow-card transition-all flex items-center justify-between group sm:col-span-2"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-black text-xl group-hover:scale-110 transition-transform">
+                🎴
+              </div>
+              <div className="text-left">
+                <div className="text-sm font-black text-slate-800 flex items-center gap-1.5">
+                  <span>카드 짝맞추기</span>
+                  <span className="text-[10px] px-1.5 py-0.5 bg-indigo-100 text-indigo-700 rounded-md font-bold">
+                    어휘력
+                  </span>
+                </div>
+                <div className="text-xs text-slate-400 font-semibold mt-0.5">
+                  단어와 유의어·반의어 짝 연결하기
+                </div>
+              </div>
+            </div>
+            <Layers className="w-4 h-4 text-slate-300 group-hover:text-indigo-500 transition-colors" />
+          </Link>
         </div>
       </div>
 

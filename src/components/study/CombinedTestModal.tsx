@@ -99,7 +99,7 @@ export default function CombinedTestModal({
       badge: "집중력",
     },
     {
-      id: "word-bank-cloze",
+      id: "word-bank",
       name: "문맥 빈칸 채우기",
       desc: "교재 예문 속 빈칸에 들어갈 단어 추론",
       icon: FileText,

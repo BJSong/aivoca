@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Sparkles, Trophy } from "lucide-react";
+import { Check, Sparkles, Trophy, ArrowLeft } from "lucide-react";
 import { VocabItem } from "@/types/vocab";
 import { playCorrectSound, playIncorrectSound, playClickSound } from "@/lib/audio";
 import { getEnglishPartOfSpeech } from "@/lib/vocab-utils";
@@ -10,6 +10,7 @@ import { getEnglishPartOfSpeech } from "@/lib/vocab-utils";
 interface MatchingGameProps {
   words: VocabItem[];
   onComplete: () => void;
+  onExit?: () => void;
 }
 
 interface MatchCard {
@@ -21,7 +22,7 @@ interface MatchCard {
   badgeClass?: string;
 }
 
-export default function MatchingGame({ words, onComplete }: MatchingGameProps) {
+export default function MatchingGame({ words, onComplete, onExit }: MatchingGameProps) {
   const [cards, setCards] = useState<MatchCard[]>([]);
   const [selectedCard, setSelectedCard] = useState<MatchCard | null>(null);
   const [matchedPairIds, setMatchedPairIds] = useState<Set<string>>(new Set());
@@ -150,11 +151,27 @@ export default function MatchingGame({ words, onComplete }: MatchingGameProps) {
 
   return (
     <div className="card-chunky max-w-2xl mx-auto border-brand-200 bg-white">
-      <div className="text-center mb-6">
-        <div className="inline-flex items-center gap-2 bg-sunny-100 text-amber-800 px-4 py-1.5 rounded-full font-black text-sm mb-2 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        {onExit ? (
+          <button
+            type="button"
+            onClick={onExit}
+            className="btn-touch p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 transition"
+            title="나가기"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+        ) : (
+          <div className="w-9" />
+        )}
+        <div className="inline-flex items-center gap-2 bg-sunny-100 text-amber-800 px-4 py-1.5 rounded-full font-black text-sm shadow-sm">
           <Sparkles className="w-4 h-4 text-amber-500 fill-amber-400" />
-          <span>보너스 정교화 부호화 퀘스트</span>
+          <span>카드 짝맞추기 퀘스트</span>
         </div>
+        <div className="w-9" />
+      </div>
+
+      <div className="text-center mb-6">
         <h3 className="text-2xl sm:text-3xl font-black text-slate-800">
           단어 짝맞추기 카드 게임 🎴
         </h3>

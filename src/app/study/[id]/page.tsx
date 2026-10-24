@@ -105,12 +105,20 @@ function StudyContent() {
     playFanfareSound();
   };
 
-  // 특화 모드 완료 처리 (스피드 매칭, 문맥 빈칸, 스펠링 스나이퍼)
+  // 특화 모드 완료 처리 (스피드 매칭, 문맥 빈칸, 스펠링 스나이퍼, 카드 짝맞추기)
+  const handleExit = () => {
+    if (deckId.startsWith("deck-combined")) {
+      router.push("/");
+    } else {
+      router.push(`/decks/${deckId}`);
+    }
+  };
+
   const handleSpecialModeComplete = (modeName: string, xpBonus: number = 50) => {
     addXP(xpBonus);
     setEarnedXP((prev) => prev + xpBonus);
     recordStudyActivity();
-    router.push(`/decks/${deckId}`);
+    handleExit();
   };
 
   if (!deck || deck.items.length === 0) {
@@ -130,7 +138,7 @@ function StudyContent() {
     );
   }
 
-  // 1. [신규 특화 모드 1] 스피드 10 매칭 (5+5 릴레이)
+  // 1. [특화 모드 1] 스피드 10 매칭 (5+5 릴레이)
   if (mode === "speed-match") {
     return (
       <div className="py-2">
@@ -139,14 +147,14 @@ function StudyContent() {
           onComplete={(stats) => {
             handleSpecialModeComplete("스피드 10 매칭", 50);
           }}
-          onExit={() => router.push(`/decks/${deckId}`)}
+          onExit={handleExit}
         />
       </div>
     );
   }
 
-  // 2. [신규 특화 모드 2] 5문장 문맥 빈칸 챌린지 (Word Bank)
-  if (mode === "word-bank") {
+  // 2. [특화 모드 2] 5문장 문맥 빈칸 챌린지 (Word Bank)
+  if (mode === "word-bank" || mode === "word-bank-cloze") {
     return (
       <div className="py-2">
         <WordBankCloze
@@ -154,13 +162,13 @@ function StudyContent() {
           onComplete={() => {
             handleSpecialModeComplete("문맥 빈칸 챌린지", 50);
           }}
-          onExit={() => router.push(`/decks/${deckId}`)}
+          onExit={handleExit}
         />
       </div>
     );
   }
 
-  // 3. [신규 특화 모드 3] 스펠링 스나이퍼 (혼동 철자 저격)
+  // 3. [특화 모드 3] 스펠링 스나이퍼 (혼동 철자 저격)
   if (mode === "spelling-sniper") {
     return (
       <div className="py-2">
@@ -169,13 +177,56 @@ function StudyContent() {
           onComplete={() => {
             handleSpecialModeComplete("스펠링 스나이퍼", 50);
           }}
-          onExit={() => router.push(`/decks/${deckId}`)}
+          onExit={handleExit}
         />
       </div>
     );
   }
 
-  // 4. [기본 모드] 3단계 능동적 인출 훈련 파이프라인
+  // 4. [특화 모드 4] 카드 짝맞추기 게임 (Matching)
+  if (mode === "matching") {
+    return (
+      <div className="py-2">
+        <MatchingGame
+          words={deck.items}
+          onComplete={() => {
+            handleSpecialModeComplete("카드 짝맞추기", 50);
+          }}
+          onExit={handleExit}
+        />
+      </div>
+    );
+  }
+
+  // 5. [특화 모드 5] TED 스토리 문맥 빈칸 완성 (Story Context)
+  if (mode === "story") {
+    return (
+      <div className="py-2">
+        <div className="mb-4 flex items-center justify-between">
+          <button
+            type="button"
+            onClick={handleExit}
+            className="btn-touch p-2.5 bg-white border border-slate-200 rounded-2xl text-slate-700 hover:bg-slate-50 flex items-center gap-2 text-sm font-bold shadow-sm"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>나가기</span>
+          </button>
+          <span className="text-xs font-black text-brand-600 bg-brand-50 px-3 py-1.5 rounded-full border border-brand-200">
+            {deck.title}
+          </span>
+        </div>
+        <StoryBlankGame
+          wordItem={deck.items[0]}
+          otherWords={deck.items}
+          onComplete={() => {
+            handleSpecialModeComplete("스토리 문맥 완성", 50);
+          }}
+        />
+      </div>
+    );
+  }
+
+  // 6. [기본 모드] 3단계 능동적 인출 훈련 파이프라인
   const currentWord = deck.items[currentIndex];
 
   return (
@@ -185,8 +236,9 @@ function StudyContent() {
         <button
           type="button"
           onClick={() => {
-            if (confirm("학습을 중단하고 단어장으로 돌아가시겠어요?")) {
-              router.push(`/decks/${deckId}`);
+            const dest = deckId.startsWith("deck-combined") ? "홈" : "단어장";
+            if (confirm(`학습을 중단하고 ${dest}으로 돌아가시겠어요?`)) {
+              handleExit();
             }
           }}
           className="p-2 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 active:scale-95"
@@ -309,11 +361,11 @@ function StudyContent() {
               <span>다시 학습</span>
             </button>
             <Link
-              href={`/decks/${deck.id}`}
+              href={deck.id.startsWith("deck-combined") ? "/" : `/decks/${deck.id}`}
               className="flex-1 btn-touch py-3 bg-brand-500 hover:bg-brand-600 text-white rounded-2xl font-black text-sm shadow-playful-brand flex items-center justify-center gap-1.5"
             >
               <Home className="w-4 h-4" />
-              <span>단어장으로</span>
+              <span>{deck.id.startsWith("deck-combined") ? "홈으로" : "단어장으로"}</span>
             </Link>
           </div>
         </div>
